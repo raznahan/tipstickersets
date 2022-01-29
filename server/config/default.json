@@ -1,0 +1,5 @@
+{
+    "connectionString": "mongodb://localhost/tipstickers",
+    "port": "3000",
+    "requiresAuth": false
+}

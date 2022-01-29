@@ -1,0 +1,226 @@
+const request = require('supertest');
+const mongoose = require('mongoose');
+const { StickerSet } = require('../../../models/stickerSet');
+const { Owner } = require('../../../models/owner');
+const winston = require('winston');
+const CombinedStream = require('combined-stream');
+
+let server;
+
+describe('/api/stickersets', () => {
+    let path = '';
+    const stickerSetBulkSize = 120;
+    const stickerSetLimit = 100;
+    let dummyStickerSets = [];
+    let page, count;
+
+    beforeEach(() => {
+        server = require('../../../server');
+        path = '/api/stickersets';
+    });
+    afterEach(async () => {
+        await server.close();
+        await StickerSet.deleteMany({});
+        await Owner.deleteMany({});
+        dummyStickerSets = [];
+    });
+
+    const sendGETRequest = async () => {
+        return await request(server)
+            .get(path);
+    }
+    const createDummyStickerSets = (count) => {
+        for (let i = 0; i < count; i++) {
+            dummyStickerSets.push(createSet(i));
+        }
+    };
+    const createOwner = async () => {
+        const walletAddress = '0x3078c9Cd04dCf7307841DeF8EC53b6BAa480F34f';
+        let owner = new Owner({
+            wallet: walletAddress
+        });
+        return await owner.save();
+    }
+    const createSet = (index) => {
+        return { name: 'name' + index, title: 'title' + index, tips: index, isActive: true, ownerVerified: true };
+    }
+
+    describe('GET /', () => {
+        it('should return up to 100 active stickersets whose owner wallets are verified, if no pagination provided', async () => {
+            createDummyStickerSets(stickerSetBulkSize);
+            await StickerSet.collection.insertMany(dummyStickerSets);
+            const result = await sendGETRequest();
+
+            expect(result.status).toBe(200);
+            expect(result.body.stickersetList.length).toBeLessThan(stickerSetLimit + 1);
+            expect(result.body.stickersetList.length).toBeGreaterThan(0);
+            //expect(result.body.some(s => s.name === 'name1')).toBeTruthy();
+
+        });
+        it.each(
+            [[10, 3, 3],
+            [10, 3, 4],
+            [10, 3, 5],
+            [10, 1, 10],
+            [10, 1, 9],
+            [9, 2, 5],
+            [10, 1, 12],
+            [10, 2, 5]]
+        )
+            ('shoud return paginated list of stickersets whose owner wallets are verified  dummyDataSize:%s, count:%s, page:%s',
+                async (dummyDataSize, count, page) => {
+                    createDummyStickerSets(dummyDataSize);
+                    await StickerSet.collection.insertMany(dummyStickerSets);
+                    path += '?count=' + count + '&page=' + page;
+                    const result = await sendGETRequest();
+                    let skip = (page - 1) * count;
+                    let remainingItems = dummyDataSize - skip;
+                    let expectedNumberOfItemsReceived = (remainingItems <= 0) ? 0 : ((remainingItems < count) ? remainingItems % count : count);
+                    expect(result.status).toBe(200);
+                    expect(result.body.stickersetList.length).toBe(expectedNumberOfItemsReceived);
+
+                });
+
+    });
+
+    describe('GET /:id', () => {
+        it('should return a stickerset if valid id is provided and stickerset is active and owner verified', async () => {
+            const stickerSet = new StickerSet({ name: 'stickerset1', title: 'title1', isActive: true, ownerVerified: true });
+            await stickerSet.save();
+
+            path = path + "/" + stickerSet._id;
+
+            const result = await sendGETRequest();
+
+            expect(result.status).toBe(200);
+            expect(result.body).toHaveProperty('_id', stickerSet._id.toHexString());
+
+        });
+        it('should return 404 if valid id is provided and stickerset is active and owner not verified', async () => {
+            const stickerSet = new StickerSet({ name: 'stickerset1', title: 'title1', isActive: true, ownerVerified: false });
+            await stickerSet.save();
+
+            path = path + "/" + stickerSet._id;
+
+            const result = await sendGETRequest();
+
+            expect(result.status).toBe(404);
+
+        });
+
+        it('should return 404 if invalid id is provided', async () => {
+            path = path + "/1";
+            const result = await sendGETRequest();
+
+            expect(result.status).toBe(404);
+        });
+
+        it('should return 404 if valid id is provided and stickerset is not found', async () => {
+            const id = mongoose.Types.ObjectId();
+            path = path + "/" + id;
+            const result = await sendGETRequest();
+
+            expect(result.status).toBe(404);
+        });
+
+    });
+
+    describe('POST /add', () => {
+
+        let path = '/api/stickersets/add/';
+        let stickerSetLink;
+        let ownerWalletAddress;
+
+        const sendPOSTRequest = async () => {
+
+            return await request(server)
+                .post(path)
+                .send({ stickerSetLink, ownerWalletAddress });
+        }
+        it('should return 400 if owner wallet address is invalid', async () => {
+            ownerWalletAddress = '0x0';
+            const result = await sendPOSTRequest();
+
+            expect(result.status).toBe(400);
+
+        });
+        it('should return 400 if owner wallet address is not found', async () => {
+
+            await createOwner();
+            const unkownWalletAddress = '0xfE76197fb8b0E19B8750E51694b7d585D91A554a';
+            ownerWalletAddress = unkownWalletAddress;
+            const result = await sendPOSTRequest();
+
+            expect(result.status).toBe(400);
+
+        });
+        it('should return 400 if stickerset link is invalid', async () => {
+            stickerSetLink = "http://invalidlink.com";
+            ownerWalletAddress = '0x3078c9Cd04dCf7307841DeF8EC53b6BAa480F34f';
+            const result = await sendPOSTRequest();
+
+            expect(result.status).toBe(400);
+
+        });
+        it('should return 200 if both stickerset link and owner wallet address are valid', async () => {
+            stickerSetLink = 'ghalb_765_by_demybot';
+            const owner = await createOwner();
+            ownerWalletAddress = owner.wallet;
+            const result = await sendPOSTRequest();
+
+            expect(result.status).toBe(200);
+
+        });
+
+
+    });
+
+    describe('POST /updateTip', () => {
+        let path = '/api/stickersets/updateTip/';
+        let stickerSetName;
+        let currentTip;
+        let tips;
+
+        beforeEach(() => {
+            stickerSetName = '';
+            currentTip = 0;
+            tips = 0;
+        });
+        const sendPOSTRequest = async () => {
+            return await request(server)
+                .post(path)
+                .send({ name: stickerSetName, tips: tips });
+        }
+        const createNewStickerSet = async () => {
+            const newStickerSet = new StickerSet({ name: 'some_name', title: 'some_title', tips: currentTip, isActive: true, ownerVerified: true });
+            await newStickerSet.save();
+            return newStickerSet;
+
+        };
+        it('should return 404 if stickerset not found', async () => {
+            await createNewStickerSet();
+            stickerSetName = 'nonexisting_stickerset_name';
+            const result = await sendPOSTRequest();
+
+            expect(result.status).toBe(404);
+
+        });
+        it('should update the tip amount', async () => {
+            currentTip = 1;
+            tips = 0.1;
+            const stickerset = await createNewStickerSet();
+            stickerSetName = stickerset.name;
+            const result = await sendPOSTRequest();
+
+            const finalTipAmount = currentTip + tips;
+
+            expect(result.status).toBe(200);
+            expect(result.body.tips).toBe(finalTipAmount);
+
+
+        });
+
+    });
+
+
+});

@@ -1,0 +1,30 @@
+.title {
+    font-family: 'Carter One';
+  }
+  .container {
+    margin-top: 50px;
+    text-align: center;
+  }
+  
+  .image-grid {
+    /* display: grid;
+    grid-gap: 40px;
+    padding: 40px;
+     grid-template-columns: 200px 200px 200px 200px 200px; 
+     grid-auto-rows: minmax(50px, auto);  */
+     width: 100%;
+     display: grid;
+     grid-template-columns: repeat(5, 1fr);
+     grid-gap:50px; /* even spacing using grid-gap, You can use percentage values if you want*/
+  }
+    .image-item:nth-child(5n){
+      grid-column-end: span 2;
+    }
+
+    img.stickeritem{
+      display: flex;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
