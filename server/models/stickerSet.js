@@ -31,6 +31,9 @@ var stickerSetSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    thumbnail:{
+        type: String
+    },
     created: {
         type: Date,
         default: Date.now,

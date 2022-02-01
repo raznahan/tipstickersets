@@ -9,8 +9,12 @@ const TelegramBot = require('node-telegram-bot-api');
 const { StickerSet } = require('../models/stickerSet');
 const { Owner } = require('../models/owner');
 const { json } = require('express');
-const token = '536155432:AAFbV3HIYQed4WwG7TJPN8Gdu1-sl3Vcf70';
-
+const token = process.env.TELEGRAM_TOKEN;
+const telegramService = new TelegramService(new TelegramBot(token));
+const StickerService = require('../services/StickerService');
+const FileService = require('../services/FileService');
+const fileService = new FileService();
+const stickerService = new StickerService(telegramService,fileService,StickerSet);
 
 listRouter.get('/', async (req, res) => {
 
@@ -28,8 +32,11 @@ listRouter.get('/', async (req, res) => {
         .populate('owner', 'wallet -_id');
 
     const itemsCount = await StickerSet.count({ isActive: true, ownerVerified: true });
-    const result = {stickersetList:stickersetList,itemsCount:itemsCount};
-    
+
+    stickerset = await stickerService.downloadAndSaveStickerSetThumbnail(stickersetList);
+
+    const result = { stickersetList: stickersetList, itemsCount: itemsCount };
+
     res.send(result);
 
 });
@@ -51,7 +58,6 @@ listRouter.post('/add', async (req, res) => {
     if (!walletValidator.validate(req.body.ownerWalletAddress, 'ETH'))
         return res.status(400).send('invalid wallet address.');
 
-    const telegramService = new TelegramService(new TelegramBot(token));
     let stickerSet;
     try {
         stickerSet = await telegramService.getStickerSet(req.body.stickerSetLink);

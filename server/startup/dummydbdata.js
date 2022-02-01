@@ -3,7 +3,7 @@ const { Owner } = require('../models/owner');
 const winston = require('winston');
 
 const createSet = (index, owner) => {
-    return { name: 'name' + index, title: 'title' + index, owner: owner, tips: index, isActive: true, ownerVerified: true };
+    return { name: 'name' + index, title: 'title' + index, owner: owner, tips: index,thumbnail:'dummy thumbnail', isActive: true, ownerVerified: true };
 }
 
 module.exports = async () => {

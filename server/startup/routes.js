@@ -7,5 +7,6 @@ module.exports = function (app) {
     app.use(express.json());
     app.use('/api/home',home);
     app.use('/api/stickersets',stickersets);
+    app.use('/media', express.static('media'));
     app.use(error);
 }

@@ -4,6 +4,14 @@ const { StickerSet } = require('../../../models/stickerSet');
 const { Owner } = require('../../../models/owner');
 const winston = require('winston');
 const CombinedStream = require('combined-stream');
+const TelegramBot = require('node-telegram-bot-api');
+const TelegramService = require('../../../services/TelegramService');
+const token = 'fake token';
+const telegramService = new TelegramService(new TelegramBot(token));
+const StickerService = require('../../../services/StickerService');
+const FileService = require('../../../services/FileService');
+const fileService = new FileService();
+const stickerService = new StickerService(telegramService, fileService);
 
 let server;
 
@@ -14,9 +22,11 @@ describe('/api/stickersets', () => {
     let dummyStickerSets = [];
     let page, count;
 
+
     beforeEach(() => {
         server = require('../../../server');
         path = '/api/stickersets';
+
     });
     afterEach(async () => {
         await server.close();
@@ -42,13 +52,16 @@ describe('/api/stickersets', () => {
         return await owner.save();
     }
     const createSet = (index) => {
-        return { name: 'name' + index, title: 'title' + index, tips: index, isActive: true, ownerVerified: true };
+        return { name: 'name' + index, title: 'title' + index, tips: index, thumbnail: 'dummy thumbnail', isActive: true, ownerVerified: true };
     }
 
     describe('GET /', () => {
         it('should return up to 100 active stickersets whose owner wallets are verified, if no pagination provided', async () => {
             createDummyStickerSets(stickerSetBulkSize);
             await StickerSet.collection.insertMany(dummyStickerSets);
+            stickerService.getStickerSetsThumbnail = async (dummyStickerSets) => {
+                return dummyStickerSets;
+            };
             const result = await sendGETRequest();
 
             expect(result.status).toBe(200);

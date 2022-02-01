@@ -25,6 +25,7 @@ contract TipStickerSets {
         payable
         hasMinimumTip
     {
+        
         require(bytes(_name).length != 0);
         require(msg.sender.balance >= 0.01 ether);
 
