@@ -3,12 +3,13 @@ import Web3 from 'web3';
 import { Route, Routes } from "react-router-dom";
 import Identicon from 'identicon.js';
 import './App.css';
-import TipStickerSets from './build/TipStickerSets.json'
-import Navbar from './components/Navbar'
+import TipStickerSets from './build/TipStickerSets.json';
+import Navbar from './components/Navbar';
+import AddStickerSet from './components/AddStickerset';
 //import { stickerSetSchema } from '../../server/models/stickerSet';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import StickerSet from './components/StickerSet';
+import StickerSetList from './components/StickerSetList';
 const apiPath = 'http://localhost:3000/api';
 
 
@@ -25,14 +26,11 @@ const updateStickerSetTip = (name, tipAmount) => {
 
 class App extends Component {
     constructor(props) {
+        console.log('App-Constructor');
         super(props);
         this.state = {
             account: '',
-            tipstickersets: null,
-            stickersets: [],
-            hasMore: true,
-            page: 1,
-            loading: false
+            tipstickersets: null
         }
     }
 
@@ -43,7 +41,7 @@ class App extends Component {
 
         await this.loadBlockchianData();
 
-        await this.fetchStickerSetList();
+        //await this.fetchStickerSetList();
 
     }
 
@@ -79,44 +77,6 @@ class App extends Component {
         }
     }
 
-    async fetchStickerSetList(count = 10, page = 1) {
-        console.log('fetchStickerSetList called: page' + page);
-        this.setState({ loading: true });
-        axios
-            .get(`http://localhost:3000/api/stickersets?count=${count}&page=${page}`)
-            .then((response) => {
-                console.log('response received');
-                this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
-                Number(this.state.stickersets.length) < Number(response.data.itemsCount)
-                    ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
-                this.setState({ page: Number(this.state.page) + 1 })
-                this.fetchTipAmounts(this.state.stickersets);
-                this.setState({ loading: false });
-            })
-            .catch(function (error) {
-                console.log("error-" + error);
-            });
-
-    }
-
-    async fetchTipAmounts(stickersets) {
-        console.log('reached fetchTip');
-        for (let i = 0; i < stickersets.length; i++) {
-            const item = stickersets[i];
-            if (item.isTipped) {
-                const tips = await this.getStickerSetTip(item.name);
-                if (tips) {
-                    item.tips = tips;
-                    stickersets[i] = item;
-                    console.log('tip set-' + item.name);
-                }
-                console.log('foreach-' + item.name);
-            }
-
-        }
-        this.setState({ stickersets });
-    };
-
     getStickerSetTip = async (name) => {
         console.log('name: ' + name);
         const stickerSet = await this.state.tipstickersets.methods.stickerSets(name).call();
@@ -132,46 +92,32 @@ class App extends Component {
                 this.setState({ loading: false });
             })
     }
-    
+
     render() {
         console.log('App-render called');
         return (
             <div>
                 <Navbar account={this.state.account} />
-                {
-                    <div className="hero is-fullheight is-bold is-info">
-                        <div className="hero-body">
-                            <div className="container">
-                                <div className="header content">
-                                    <h2 className="subtitle is-6">Code Challenge #16</h2>
-                                    <h1 className="title is-1">
-                                        Infinite Scroll Unsplash Code Challenge
-                                    </h1>
-                                </div>
-                                <InfiniteScroll
-                                    dataLength={this.state.stickersets.length}
-                                    next={() => { this.fetchStickerSetList(5, this.state.page) }}
-                                    hasMore={true}
-                                    loader={
-                                        <img
-                                            src="https://res.cloudinary.com/chuloo/image/upload/v1550093026/scotch-logo-gif_jq4tgr.gif"
-                                            alt="loading"
-                                        />}>
-                                    <div className="image-grid" style={{ marginTop: "30px" }}>
-                                        {this.state.stickersets.map((stickerset,index) => (
-                                            <StickerSet stickerset={stickerset} key={index} tip={this.tip} />
-                                        ))}
-                                    </div>
-                                </InfiniteScroll>
-                            </div>
-                        </div>
-                    </div>
+                <Routes>
+                    <Route exact path="/" element={<StickerSetList
+                        stickersets={this.state.stickersets}
+                        tip={this.tip}
+                        getStickerSetTip={this.getStickerSetTip}
+                    />}>
+                        {
+                            // <Routes>
+                            //     <Route exact path="/" element={<StickerSetList tip={this.tip} stickersets={this.state.stickersets} />} />
+                            // </Routes>
 
+                        }
+                    </Route>
+                    <Route path='/add' element={<AddStickerSet />}>
+                    </Route>
+                    {/* <Route path="/add">
+                        <AddStickerSet/>
+                    </Route> */}
+                </Routes>
 
-                    // <Routes>
-                    //     <Route exact path="/" element={<StickerSetList tip={this.tip} stickersets={this.state.stickersets} />} />
-                    // </Routes>
-                }
             </div>
         );
     }
