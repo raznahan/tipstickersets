@@ -21,12 +21,12 @@ describe('/api/stickersets', () => {
     const stickerSetLimit = 100;
     let dummyStickerSets = [];
     let page, count;
-
+    let postData;
 
     beforeEach(() => {
         server = require('../../../server');
         path = '/api/stickersets';
-
+        postData=null;
     });
     afterEach(async () => {
         await server.close();
@@ -38,6 +38,11 @@ describe('/api/stickersets', () => {
     const sendGETRequest = async () => {
         return await request(server)
             .get(path);
+    }
+    const sendPOSTRequest = async (postData) => {
+        return await request(server)
+            .post(path)
+            .send(postData);
     }
     const createDummyStickerSets = (count) => {
         for (let i = 0; i < count; i++) {
@@ -138,21 +143,18 @@ describe('/api/stickersets', () => {
 
     });
 
-    describe('POST /add', () => {
+    describe('POST /register', () => {
 
-        let path = '/api/stickersets/add/';
+        beforeEach(()=>{
+            path = '/api/stickersets/register/';
+        })
         let stickerSetLink;
         let ownerWalletAddress;
 
-        const sendPOSTRequest = async () => {
-
-            return await request(server)
-                .post(path)
-                .send({ stickerSetLink, ownerWalletAddress });
-        }
         it('should return 400 if owner wallet address is invalid', async () => {
             ownerWalletAddress = '0x0';
-            const result = await sendPOSTRequest();
+            postData = {stickerSetLink,ownerWalletAddress};
+            const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(400);
 
@@ -162,7 +164,8 @@ describe('/api/stickersets', () => {
             await createOwner();
             const unkownWalletAddress = '0xfE76197fb8b0E19B8750E51694b7d585D91A554a';
             ownerWalletAddress = unkownWalletAddress;
-            const result = await sendPOSTRequest();
+            postData = {stickerSetLink,ownerWalletAddress};
+            const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(400);
 
@@ -170,16 +173,18 @@ describe('/api/stickersets', () => {
         it('should return 400 if stickerset link is invalid', async () => {
             stickerSetLink = "http://invalidlink.com";
             ownerWalletAddress = '0x3078c9Cd04dCf7307841DeF8EC53b6BAa480F34f';
-            const result = await sendPOSTRequest();
+            postData = {stickerSetLink,ownerWalletAddress};
+            const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(400);
 
         });
         it('should return 200 if both stickerset link and owner wallet address are valid', async () => {
-            stickerSetLink = 'ghalb_765_by_demybot';
+            stickerSetLink = 'WorldArt';
             const owner = await createOwner();
             ownerWalletAddress = owner.wallet;
-            const result = await sendPOSTRequest();
+            postData = {stickerSetLink,ownerWalletAddress};
+            const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(200);
 
@@ -189,21 +194,16 @@ describe('/api/stickersets', () => {
     });
 
     describe('POST /updateTip', () => {
-        let path = '/api/stickersets/updateTip/';
         let stickerSetName;
         let currentTip;
         let tips;
-
         beforeEach(() => {
             stickerSetName = '';
             currentTip = 0;
             tips = 0;
+            path = '/api/stickersets/updateTip/';
         });
-        const sendPOSTRequest = async () => {
-            return await request(server)
-                .post(path)
-                .send({ name: stickerSetName, tips: tips });
-        }
+      
         const createNewStickerSet = async () => {
             const newStickerSet = new StickerSet({ name: 'some_name', title: 'some_title', tips: currentTip, isActive: true, ownerVerified: true });
             await newStickerSet.save();
@@ -213,7 +213,8 @@ describe('/api/stickersets', () => {
         it('should return 404 if stickerset not found', async () => {
             await createNewStickerSet();
             stickerSetName = 'nonexisting_stickerset_name';
-            const result = await sendPOSTRequest();
+            postData = { name: stickerSetName, tips: tips };
+            const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(404);
 
@@ -223,7 +224,8 @@ describe('/api/stickersets', () => {
             tips = 0.1;
             const stickerset = await createNewStickerSet();
             stickerSetName = stickerset.name;
-            const result = await sendPOSTRequest();
+            postData = { name: stickerSetName, tips: tips };
+            const result = await sendPOSTRequest(postData);
 
             const finalTipAmount = currentTip + tips;
 
@@ -235,5 +237,36 @@ describe('/api/stickersets', () => {
 
     });
 
+    describe('POST /validatesetname',()=>{
+        beforeEach(() => {        
+            path = '/api/stickersets/validatesetname';
+        });
+        let stickerSetLink;
+
+        it.each([
+            ['https://t.me/addstickers/invalidstickerset'],
+            ['https://www.google.com'],
+            ['http://telegram.me/addstickers/invalidstickerset'],
+            ['htp://t.me/addstickers/invalidstickerset']
+        ])
+        ('should return 400 if invalid stickerset link provided. Link is: %s',async(link)=>{
+            postData ={stickerSetLink:link};
+            const result = await sendPOSTRequest(postData);
+
+            expect(result.status).toBe(400);
+
+        });
+
+        it.each([
+            ['https://t.me/addstickers/WorldArt'],
+            ['t.me/addstickers/WorldArt']
+        ])
+        ('should return 200 if valid stickerset link provided. Link is: %s',async(link)=>{
+            postData={stickerSetLink:link}
+            const result = await sendPOSTRequest(postData);
+
+            expect(result.status).toBe(200);
+        });
+    });
 
 });

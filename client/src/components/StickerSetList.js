@@ -11,15 +11,14 @@ export default class StickerSetList extends Component {
         this.state = {
             stickersets: []
         };
-        console.info('StickerSetList-Constructor');
     }
 
     render() {
-        console.info('StickerSetList-Render');
-        for (const [key, value] of Object.entries(this.props)) {
-            if (key != 'fetchStickerSetList' && key != 'tip')
-                console.log(`${key}: ${value}`)
-        }
+        // console.info('StickerSetList-Render');
+        // for (const [key, value] of Object.entries(this.props)) {
+        //     if (key != 'fetchStickerSetList' && key != 'tip')
+        //         console.log(`${key}: ${value}`)
+        // }
 
         return (
             <div className="hero is-fullheight is-bold is-info">

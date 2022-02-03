@@ -14,7 +14,7 @@ const telegramService = new TelegramService(new TelegramBot(token));
 const StickerService = require('../services/StickerService');
 const FileService = require('../services/FileService');
 const fileService = new FileService();
-const stickerService = new StickerService(telegramService,fileService,StickerSet);
+const stickerService = new StickerService(telegramService, fileService, StickerSet);
 
 listRouter.get('/', async (req, res) => {
 
@@ -53,7 +53,7 @@ listRouter.get('/:id', validateObjectId, async (req, res) => {
 
 });
 
-listRouter.post('/add', async (req, res) => {
+listRouter.post('/register', async (req, res) => {
 
     if (!walletValidator.validate(req.body.ownerWalletAddress, 'ETH'))
         return res.status(400).send('invalid wallet address.');
@@ -82,7 +82,7 @@ listRouter.post('/add', async (req, res) => {
 
 });
 
-listRouter.post('/updateTip', async (req, res) => {
+listRouter.post('/updatetip', async (req, res) => {
     let stickerset = await StickerSet.findOne({ name: req.body.name, isActive: true, ownerVerified: true });
     if (!stickerset)
         return res.status(404).send('stickerset name not found.');
@@ -95,6 +95,20 @@ listRouter.post('/updateTip', async (req, res) => {
     await stickerset.save();
     res.send(stickerset);
 
+});
+
+listRouter.post('/validatesetname', async (req, res) => {
+    try {
+        const url = new URL(req.body.stickerSetLink);
+        console.log('url: '+url);
+        const stickerSetName = url.toString().split("/").pop();
+        const result = await telegramService.getStickerSet(stickerSetName);
+    }
+    catch (e) {
+        return res.status(400).send('invalid stickerset link');
+
+    }
+    res.send(200);
 });
 
 module.exports = listRouter;

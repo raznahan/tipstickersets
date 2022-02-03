@@ -5,7 +5,7 @@ import Identicon from 'identicon.js';
 import './App.css';
 import TipStickerSets from './build/TipStickerSets.json';
 import Navbar from './components/Navbar';
-import AddStickerSet from './components/AddStickerset';
+import AddStickerSet from './components/RegisterStickerset';
 //import { stickerSetSchema } from '../../server/models/stickerSet';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -45,7 +45,6 @@ class App extends Component {
     }
 
     async loadWeb3() {
-        console.log('App-loadWeb3');
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
             await window.ethereum.enable()
@@ -77,11 +76,9 @@ class App extends Component {
     }
 
     fetchStickerSetList = async (count = 10, page = 1) => {
-        console.log('fetchStickerSetList called: page' + page);
         axios
             .get(`http://localhost:3000/api/stickersets?count=${count}&page=${page}`)
             .then((response) => {
-                console.log('response received');
                 this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
                 Number(this.state.stickersets.length) < Number(response.data.itemsCount)
                     ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
@@ -95,7 +92,6 @@ class App extends Component {
     }
 
     fetchTipAmounts = async (stickersets) => {
-        console.log('reached fetchTip');
         for (let i = 0; i < stickersets.length; i++) {
             const item = stickersets[i];
             if (item.isTipped) {
@@ -103,9 +99,7 @@ class App extends Component {
                 if (tips) {
                     item.tips = tips;
                     stickersets[i] = item;
-                    console.log('tip set-' + item.name);
                 }
-                console.log('foreach-' + item.name);
             }
 
         }
@@ -143,7 +137,7 @@ class App extends Component {
                     />
                     }>
                     </Route>
-                    <Route path='/add' element={<AddStickerSet />}>
+                    <Route path='/register' element={<RegisterStickerSet />}>
                     </Route>
                 </Routes>
 
