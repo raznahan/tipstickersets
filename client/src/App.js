@@ -30,19 +30,18 @@ class App extends Component {
         super(props);
         this.state = {
             account: '',
-            tipstickersets: null
+            tipstickersets: null,
+            stickersets: [],
+            page: 1,
+            hasMore: true
         }
     }
 
     async componentDidMount() {
-
         console.log('App-ComponentDidMount');
         await this.loadWeb3();
-
         await this.loadBlockchianData();
-
-        //await this.fetchStickerSetList();
-
+        await this.fetchStickerSetList();
     }
 
     async loadWeb3() {
@@ -59,7 +58,7 @@ class App extends Component {
         }
     }
 
-    async loadBlockchianData() {
+    loadBlockchianData = async () => {
         console.log('App-loadBlockchianData');
         const web3 = window.web3;
         var accounts = await web3.eth.getAccounts()
@@ -76,6 +75,42 @@ class App extends Component {
             window.alert('TipStickerSets network not deployed to detected network.')
         }
     }
+
+    fetchStickerSetList = async (count = 10, page = 1) => {
+        console.log('fetchStickerSetList called: page' + page);
+        axios
+            .get(`http://localhost:3000/api/stickersets?count=${count}&page=${page}`)
+            .then((response) => {
+                console.log('response received');
+                this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
+                Number(this.state.stickersets.length) < Number(response.data.itemsCount)
+                    ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
+                this.setState({ page: Number(this.state.page) + 1 })
+                this.fetchTipAmounts(this.state.stickersets);
+            })
+            .catch(function (error) {
+                console.log("error-" + error);
+            });
+
+    }
+
+    fetchTipAmounts = async (stickersets) => {
+        console.log('reached fetchTip');
+        for (let i = 0; i < stickersets.length; i++) {
+            const item = stickersets[i];
+            if (item.isTipped) {
+                const tips = await this.getStickerSetTip(item.name);
+                if (tips) {
+                    item.tips = tips;
+                    stickersets[i] = item;
+                    console.log('tip set-' + item.name);
+                }
+                console.log('foreach-' + item.name);
+            }
+
+        }
+        this.setState({ stickersets });
+    };
 
     getStickerSetTip = async (name) => {
         console.log('name: ' + name);
@@ -102,20 +137,14 @@ class App extends Component {
                     <Route exact path="/" element={<StickerSetList
                         stickersets={this.state.stickersets}
                         tip={this.tip}
-                        getStickerSetTip={this.getStickerSetTip}
-                    />}>
-                        {
-                            // <Routes>
-                            //     <Route exact path="/" element={<StickerSetList tip={this.tip} stickersets={this.state.stickersets} />} />
-                            // </Routes>
-
-                        }
+                        fetchStickerSetList={this.fetchStickerSetList}
+                        page={this.state.page}
+                        hasMore={this.state.hasMore}
+                    />
+                    }>
                     </Route>
                     <Route path='/add' element={<AddStickerSet />}>
                     </Route>
-                    {/* <Route path="/add">
-                        <AddStickerSet/>
-                    </Route> */}
                 </Routes>
 
             </div>
