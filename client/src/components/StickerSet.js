@@ -6,7 +6,6 @@ export default class StickerSet extends Component {
     constructor(props) {
         super(props);
         console.info('StickerSet-Constructor');
-        //this.state = { stickersets: [], loading: false };
     }
 
     render() {
