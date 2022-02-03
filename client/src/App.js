@@ -5,7 +5,7 @@ import Identicon from 'identicon.js';
 import './App.css';
 import TipStickerSets from './build/TipStickerSets.json';
 import Navbar from './components/Navbar';
-import AddStickerSet from './components/RegisterStickerset';
+import RegisterStickerSet from './components/RegisterStickerset';
 //import { stickerSetSchema } from '../../server/models/stickerSet';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
