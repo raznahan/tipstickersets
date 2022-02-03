@@ -5,7 +5,6 @@ const imgUrl = 'http://localhost:3000';
 export default class StickerSet extends Component {
     constructor(props) {
         super(props);
-        //console.info('StickerSet-Constructor');
     }
 
     render() {
