@@ -6,14 +6,31 @@ export default class AddStickerSet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stickerSetName: "",
+      stickerSetLink: "",
     };
   }
   onChangestickerSetName = async (e) => {
-    await checkStickerSetValidity(e.target.value);
-    this.setState({
-      stickerSetName: e.target.value,
-    });
+    if (e.target.value.length < 7)
+      return false;
+
+    let url;
+    try {
+      url = new URL(string);
+    } catch (e) {
+      return false;
+    }
+    if (!props.wallet)
+      return false// wallet not connected;
+
+    if (await registerStickerSet(e.target.value,props.wallet)) {
+      this.setState({
+        stickerSetLink: e.target.value,
+      });
+      await showVerificationImage();
+    }
+    else
+      return false;
+
   }
 
   onSubmit = async (e) => {
@@ -38,21 +55,35 @@ export default class AddStickerSet extends Component {
     });
   }
 
-  checkStickerSetValidity = async (name) => {
+  registerStickerSet = async (link,wallet) => {
     axios
-      .get(`http://localhost:3000/api/stickersets/register?count=${count}&page=${page}`)
+      .post('http://localhost:3000/api/stickersets/register', {ownerWalletAddress:wallet,stickerSetLink:link})
       .then((response) => {
-        this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
-        Number(this.state.stickersets.length) < Number(response.data.itemsCount)
-          ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
-        this.setState({ page: Number(this.state.page) + 1 })
-        this.fetchTipAmounts(this.state.stickersets);
+        if (response.status == 200)
+          return true;
+        else return false;
       })
       .catch(function (error) {
         console.log("error-" + error);
+        return false;
       });
 
-  }
+  };
+
+  showVerificationImage = async (link) => {
+    axios
+      .post('http://localhost:3000/api/setvification/createverificationimage', link)
+      .then((response) => {
+        const encodedImage = response.data;
+        const verificationImage = document.getElementById("verimage");
+        verificationImage.src = encodedImage;
+      })
+      .catch(function (error) {
+        console.log("error-" + error);
+        return false;
+      });
+
+  };
 
   render() {
     return (
@@ -67,6 +98,11 @@ export default class AddStickerSet extends Component {
               value={this.state.stickerSetName}
               onChange={this.onChangestickerSetName}
             />
+          </div>
+          <div id="stego" class="half">
+            <h2>Verification Image:</h2>
+            <img id="verimage" src="" />
+            <div class="note">Right-click and save as to download the image.</div>
           </div>
           <div className="form-group">
             <input

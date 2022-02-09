@@ -10,6 +10,13 @@
   "author": "Moji <mojtaba.raznahan@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.17.0",
+    "@babel/node": "^7.16.8",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-stage-2": "^7.8.3",
+    "@babel/preset-stage-3": "^7.8.3",
+    "@babel/register": "^7.17.0",
     "axios": "^0.25.0",
     "config": "^3.3.6",
     "cors": "^2.8.5",
@@ -19,13 +26,14 @@
     "express-async-errors": "^3.1.1",
     "mongoose": "^6.1.2",
     "node-telegram-bot-api": "^0.56.0",
-    "nodemon": "^2.0.15",
     "request": "^2.88.2",
+    "steggy-noencrypt": "^2.0.3",
     "wallet-address-validator": "^0.2.4",
     "winston": "^3.3.3"
   },
   "devDependencies": {
     "jest": "^27.4.5",
+    "nodemon": "^2.0.15",
     "supertest": "^6.1.6"
   }
 }

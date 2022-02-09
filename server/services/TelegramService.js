@@ -1,7 +1,6 @@
 class TelegramService {
-    constructor(bot,fileService) {
+    constructor(bot) {
         this.bot = bot;
-        this.fileService = fileService;
     };
     async sendMessage(userId, text) {
         await this.bot.sendMessage(userId, text);

@@ -14,12 +14,6 @@ export default class StickerSetList extends Component {
     }
 
     render() {
-        // console.info('StickerSetList-Render');
-        // for (const [key, value] of Object.entries(this.props)) {
-        //     if (key != 'fetchStickerSetList' && key != 'tip')
-        //         console.log(`${key}: ${value}`)
-        // }
-
         return (
             <div className="hero is-fullheight is-bold is-info">
                 <div className="hero-body">

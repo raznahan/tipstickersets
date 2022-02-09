@@ -8,7 +8,7 @@ const express = require('express');
 const config = require('config');
 const app = express();
 require('./startup/cors')(app);
-require('./startup/routes')(app);
+require('./startup/routes.js')(app);
 require("./startup/db")();
 require('config');
 

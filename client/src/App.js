@@ -56,7 +56,6 @@ class App extends Component {
             window.alert('Non-Ethereum browser detected. You should consider trying metamask!')
         }
     }
-
     loadBlockchianData = async () => {
         console.log('App-loadBlockchianData');
         const web3 = window.web3;
@@ -121,7 +120,6 @@ class App extends Component {
                 this.setState({ loading: false });
             })
     }
-
     render() {
         console.log('App-render called');
         return (
@@ -137,10 +135,9 @@ class App extends Component {
                     />
                     }>
                     </Route>
-                    <Route path='/register' element={<RegisterStickerSet />}>
+                    <Route path='/register' element={<RegisterStickerSet wallet={this.state.account}/>}>
                     </Route>
                 </Routes>
-
             </div>
         );
     }
