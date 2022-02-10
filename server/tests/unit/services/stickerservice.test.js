@@ -4,7 +4,7 @@ const telegramToken = 'dummy token';
 
 
 describe('getStickerSetsThumbnail', () => {
-    let telegramBot = new TelegramBot()
+    let telegramBot = new TelegramBot();
     let stickerService;
 
     const telegramService = {
@@ -39,11 +39,11 @@ describe('getStickerSetsThumbnail', () => {
     };
 
     beforeEach(() => {
-        stickerService = new StickerService(telegramService, fileService, StickerSet);
+
     });
     it('should download and save thumbnail if a thumbnail is null', async () => {
+        stickerService = new StickerService(telegramService, fileService, StickerSet);
         const result = await stickerService.downloadAndSaveStickerSetThumbnail(stickersets);
-
         expect(result.length).toBe(stickersets.length);
         expect(result[0].thumbnail).toBeTruthy();
 

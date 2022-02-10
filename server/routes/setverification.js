@@ -1,14 +1,15 @@
 const express = require('express');
 const winston = require('winston');
 const listRouter = express.Router();
-const StickerSetValidationService = require('../services/StickerSetValidationService');
-const token = process.env.TELEGRAM_TOKEN;
 const TelegramBot = require('node-telegram-bot-api');
 const TelegramService = require('../services/TelegramService');
+const token = process.env.TELEGRAM_TOKEN;
 const telegramService = new TelegramService(new TelegramBot(token));
+const StickerSetValidationService = require('../services/StickerSetValidationService');
+const stickerSetValidationService = new StickerSetValidationService(telegramService);
 const fs = require('fs');
 const path = require('path');
-const steggy = require('steggy-noencrypt')
+const steggy = require('steggy-noencrypt');
 const baseImage = 'baseimage.png';
 const encodedImage = 'baseimage-encoded.png';
 const dirName = 'resources/';
@@ -17,11 +18,11 @@ const tempDirName = 'resources/temp/';
 
 
 listRouter.post('/validatesetname', async (req, res) => {
-    const stickerSetValidationService = new StickerSetValidationService(telegramService);
+     //stickerSetValidationService = new StickerSetValidationService(telegramService);
     if (await stickerSetValidationService.validateAndFetchStickerSet(req.body.stickerSetLink))
-        res.send(200);
+        return res.send(200);
     else
-        res.status(400).send('invalid stickerset link');
+        return res.status(400).send('invalid stickerset link');
 });
 
 listRouter.post('/createverificationimage', async (req, res) => {

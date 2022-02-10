@@ -18,7 +18,7 @@ class StickerSetValidationService {
             stickerSet = await this.telegramService.getStickerSet(stickerSetName);
         }
         catch (err) {
-            console.log(err);
+            //console.log('error in stickerverificaition-StickerSet:'+stickerSetName+'\nerror:'+err);
             return null;
         }
 
