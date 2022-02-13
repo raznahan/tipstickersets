@@ -1,24 +1,23 @@
+const regexParser = require("regex-parser");
 
-const StringService = require('../services/StringService');
 
 class StickerSetValidationService {
     constructor(telegramService){
         this.telegramService = telegramService;
     }
 
-    async validateAndFetchStickerSet(link) {
-        const stringService = new StringService();
+    async validateAndFetchStickerSet(name) {
         let stickerSet;
-        let stickerSetName;
-        let stickerSetUrl;
         try {
-            stickerSetUrl = stringService.insertHttpsIfNeeded(link);
-            stickerSetUrl = new URL(stickerSetUrl);
-            stickerSetName = stickerSetUrl.toString().split("/").pop();
-            stickerSet = await this.telegramService.getStickerSet(stickerSetName);
+            // stickerSetUrl = stringService.insertHttpsIfNeeded(link);
+            // stickerSetUrl = new URL(stickerSetUrl);
+            // stickerSetUrl.toString().toLowerCase().search();
+            // stickerSetName = stickerSetUrl.toString().split("/").pop();
+            // console.log('stickerSetName is:'+stickerSetName);
+            stickerSet = await this.telegramService.getStickerSet(name);
         }
         catch (err) {
-            //console.log('error in stickerverificaition-StickerSet:'+stickerSetName+'\nerror:'+err);
+           // console.log('error in validateAndFetchStickerSet-setName:'+name+'\n'+err);
             return null;
         }
 

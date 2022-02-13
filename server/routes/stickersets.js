@@ -61,9 +61,13 @@ listRouter.post('/register', async (req, res) => {
 
     let stickerSet;
     const stickerValidationService = new StickerSetValidationService(telegramService);
-    stickerSet = await stickerValidationService.validateAndFetchStickerSet(req.body.stickerSetLink);
+    stickerSet = await stickerValidationService.validateAndFetchStickerSet(req.body.stickerSetName);
     if (!stickerSet)
-        return res.status(400).send('invalid stickerset link');
+        return res.status(400).send('invalid stickerset name');
+
+    const stickerResult = await StickerSet.findOne({name:req.body.stickerSetName,ownerVerified:true});
+    if(stickerResult)
+        return res.status(400).send('stickerset already exists');
 
     let owner;
     owner = await Owner.findOne({ ownerWalletAddress: req.body.ownerWalletAddress });
@@ -79,7 +83,14 @@ listRouter.post('/register', async (req, res) => {
         name: stickerSet.name,
         owner: owner._id
     });
-    await newStickerSet.save();
+
+    try {
+        await newStickerSet.save();
+    }
+    catch (err) {
+        winston.error('error in saving stickerset:'+err);
+        return res.status(500).send('something went wrong');
+    }
 
     res.sendStatus(200);
 

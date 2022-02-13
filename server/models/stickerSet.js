@@ -8,7 +8,6 @@ var stickerSetSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         index: true
     },
     owner: {

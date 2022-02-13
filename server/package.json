@@ -26,6 +26,7 @@
     "express-async-errors": "^3.1.1",
     "mongoose": "^6.1.2",
     "node-telegram-bot-api": "^0.56.0",
+    "regex-parser": "^2.2.11",
     "request": "^2.88.2",
     "steggy-noencrypt": "^2.0.3",
     "wallet-address-validator": "^0.2.4",

@@ -72,7 +72,6 @@ describe('/api/stickersets', () => {
             expect(result.status).toBe(200);
             expect(result.body.stickersetList.length).toBeLessThan(stickerSetLimit + 1);
             expect(result.body.stickersetList.length).toBeGreaterThan(0);
-            //expect(result.body.some(s => s.name === 'name1')).toBeTruthy();
 
         });
         it.each(
@@ -148,12 +147,12 @@ describe('/api/stickersets', () => {
         beforeEach(() => {
             path = path + '/register';
         })
-        let stickerSetLink;
+        let stickerSetName;
         let ownerWalletAddress;
 
         it('should return 400 if owner wallet address is invalid', async () => {
             ownerWalletAddress = '0x0';
-            postData = { stickerSetLink, ownerWalletAddress };
+            postData = { stickerSetName, ownerWalletAddress };
             const result = await sendPOSTRequest(postData);
 
             expect(result.status).toBe(400);
@@ -161,41 +160,51 @@ describe('/api/stickersets', () => {
         });
 
         it.each([
-            ['https://t.me/addstickers/invalidstickerset'],
+            ['invalidstickerset'],
             ['https://www.google.com'],
-            ['http://telegram.me/addstickers/invalidstickerset'],
-            ['htp://t.me/addstickers/invalidstickerset']
+            ['invalid sticker set']
         ])
-            ('should return 400 if stickerset link is invalid. link: %s', async (stickerSetLink) => {
+         ('should return 400 if stickerset name is invalid. name: %s', async (stickerSetName) => {
                 ownerWalletAddress = '0x3078c9Cd04dCf7307841DeF8EC53b6BAa480F34f';
-                postData = { stickerSetLink, ownerWalletAddress };
+                postData = { stickerSetName, ownerWalletAddress };
                 const result = await sendPOSTRequest(postData);
 
                 expect(result.status).toBe(400);
 
             });
+            it('should return 400 if stickerset already exists and verified', async () => {
+                const owner = await createOwner();
+                stickerSetName='worldart';
+                const stickerSet = new StickerSet({name:stickerSetName,ownerVerified:true,title:'title',owner:owner._id});
+                await stickerSet.save();
+                ownerWalletAddress = owner.wallet;
+                postData = { stickerSetName, ownerWalletAddress };
+                const result = await sendPOSTRequest(postData);
+                console.log('status:'+result.status+'-data:'+result.body);
+                expect(result.status).toBe(400);
+    
+            });
 
-        it('should return 200 if owner wallet address is not found', async () => {
+        it('should return 200 even if owner wallet address did not previously exist', async () => {
 
             //await createOwner();
-            stickerSetLink = 'WorldArt';
+            stickerSetName = 'WorldArt';
             ownerWalletAddress = '0xfE76197fb8b0E19B8750E51694b7d585D91A554a';
-            postData = { stickerSetLink, ownerWalletAddress };
+            postData = { stickerSetName, ownerWalletAddress };
             const result = await sendPOSTRequest(postData);
 
-            expect(result.status).toBe(400);
+            expect(result.status).toBe(200);
 
         });
         it.each([
-            ['http://t.me/addstickers/WorldArt'],
-            ['https://t.me/addstickers/WorldAr'],
-            ['t.me/addstickers/Buddy_Bear']
+            ['WorldArt'],
+            ['Buddy_Bear']
         ])
-            ('should return 200 if both stickerset link and owner wallet address are valid. Link is: %s', async (stickerSetLink) => {
+            ('should return 200 if both stickerset name and owner wallet address are valid. name is: %s', async (stickerSetName) => {
 
                 const owner = await createOwner();
                 ownerWalletAddress = owner.wallet;
-                postData = { stickerSetLink, ownerWalletAddress };
+                postData = { stickerSetName, ownerWalletAddress };
                 const result = await sendPOSTRequest(postData);
 
                 expect(result.status).toBe(200);
@@ -247,37 +256,5 @@ describe('/api/stickersets', () => {
         });
 
     });
-
-    // describe('POST /validatesetname',()=>{
-    //     beforeEach(() => {        
-    //         path = '/api/stickersets/validatesetname';
-    //     });
-    //     let stickerSetLink;
-
-    //     it.each([
-    //         ['https://t.me/addstickers/invalidstickerset'],
-    //         ['https://www.google.com'],
-    //         ['http://telegram.me/addstickers/invalidstickerset'],
-    //         ['htp://t.me/addstickers/invalidstickerset']
-    //     ])
-    //     ('should return 400 if invalid stickerset link provided. Link is: %s',async(link)=>{
-    //         postData ={stickerSetLink:link};
-    //         const result = await sendPOSTRequest(postData);
-
-    //         expect(result.status).toBe(400);
-
-    //     });
-
-    //     it.each([
-    //         ['https://t.me/addstickers/WorldArt'],
-    //         ['t.me/addstickers/WorldArt']
-    //     ])
-    //     ('should return 200 if valid stickerset link provided. Link is: %s',async(link)=>{
-    //         postData={stickerSetLink:link}
-    //         const result = await sendPOSTRequest(postData);
-
-    //         expect(result.status).toBe(200);
-    //     });
-    // });
 
 });

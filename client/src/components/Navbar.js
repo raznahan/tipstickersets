@@ -16,7 +16,7 @@ class Navbar extends Component {
                     </Link>
                 </div>
                 <div className="navbar-brand col-sm-3 col-md-2 mr-0">
-                    <Link className="navbar-brand" to="/add">
+                    <Link className="navbar-brand" to="/register">
                         Add StickerSet
                     </Link>
                 </div>
