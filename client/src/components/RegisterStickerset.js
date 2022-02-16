@@ -11,11 +11,11 @@ export default class AddStickerSet extends Component {
       verifybtnIsDisabled: true,
       resultMessage: "",
       verificationImage: "",
-      verificationImageText:""
+      verificationImageText: ""
     };
   }
   resetToDefault = () => {
-    this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "",verificationImageText:"" });
+    this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "", verificationImageText: "" });
   };
   onChangestickerSetName = async (e) => {
 
@@ -35,11 +35,12 @@ export default class AddStickerSet extends Component {
         submitbtnIsDisabaled: false,
         verifybtnIsDisabled: true,
         verificationImage: "",
-        verificationImageText:""
+        verificationImageText: "",
+        resultMessage: ""
       });
     }
     else {
-      this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "",verificationImageText:""});
+      this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "", verificationImageText: "" });
       return false;
     }
 
@@ -57,8 +58,8 @@ export default class AddStickerSet extends Component {
           submitbtnIsDisabaled: true,
           verifybtnIsDisabled: true,
           resultMessage: "Sticker set is successfully registered. You can try registering another sticker set.",
-          verificationImage:"",
-          verificationImageText:""
+          verificationImage: "",
+          verificationImageText: ""
         });
         this.stickerSetName.value = '';
       }
@@ -102,7 +103,7 @@ export default class AddStickerSet extends Component {
       if (err.response.status == 400 && err.response.data == "stickerset already exists") {
         console.log('StickerSet already exists');
         //Show error message to user
-        this.setState({ submitbtnIsDisabaled: false, verifybtnIsDisabled: true });
+        this.setState({ submitbtnIsDisabaled: false, verifybtnIsDisabled: true, resultMessage: "Sticker set already exists" });
         return false;
       }
       console.log('error in sending request to /register:' + err);
@@ -128,8 +129,12 @@ export default class AddStickerSet extends Component {
     try {
       const response = await axios.post('http://localhost:3000/api/setverification/showverificationimage',
         { stickerSetName: name, wallet: this.props.wallet });
-      this.setState({ verificationImage: 'data:image/png;base64,' + response.data,
-      verificationImageText:"Right-click and save as to download the image." });
+      this.setState({
+        verificationImage: 'data:image/png;base64,' + response.data,
+        verificationImageText: "Now, in order to verify your ownership over this sticker set," +
+          "you need to add the image above to you sticker set.\nThis should be the last sticker showing in the set." +
+          " Also, the image dimension is 512x300 which is a valid image dimension for Telegram stickers."
+      });
 
       return true;
     }
@@ -141,7 +146,7 @@ export default class AddStickerSet extends Component {
 
   render() {
     return (
-      <div style={{ marginTop: 20 }}>
+      <div className="RegisterSticker-Header">
         <h3>Register your sticker set</h3>
         <form onSubmit={this.verifyOwnership}>
           <div className="form-group">
@@ -155,28 +160,29 @@ export default class AddStickerSet extends Component {
             />
           </div>
           <div id="stego" className="half">
-            <h2>Verification Image:</h2>
-            <img id="verifimage" src={this.state.verificationImage} />
-            <div className="note">{this.state.verificationImageText}</div>
+            <img id="verifimage" className="verification-image" src={this.state.verificationImage} />
+            <div className="note verification-image">{this.state.verificationImageText}</div>
           </div>
-          <div className="form-group">
-            <input
-              id="submitbtn"
-              disabled={this.state.submitbtnIsDisabaled}
-              type="button"
-              value="Submit StickerSet"
-              onClick={this.submitStickerSet}
-              className="btn btn-primary"
-            />
-          </div>
-          <div className="form-group">
-            <input
-              id="verifybtn"
-              disabled={this.state.verifybtnIsDisabled}
-              type="submit"
-              value="Verify Ownership"
-              className="btn btn-primary"
-            />
+          <div className="row verification-image">
+            <div className="form-group col-md-4">
+              <input
+                id="submitbtn"
+                disabled={this.state.submitbtnIsDisabaled}
+                type="button"
+                value="Submit StickerSet"
+                onClick={this.submitStickerSet}
+                className="btn btn-primary"
+              />
+            </div>
+            <div className="form-group col-md-8">
+              <input
+                id="verifybtn"
+                disabled={this.state.verifybtnIsDisabled}
+                type="submit"
+                value="Verify Ownership"
+                className="btn btn-primary"
+              />
+            </div>
           </div>
         </form>
         <p id="messageBox" className="note">{this.state.resultMessage}</p>

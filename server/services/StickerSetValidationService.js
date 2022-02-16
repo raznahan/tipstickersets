@@ -30,6 +30,7 @@ class StickerSetValidationService {
         const lastStickerPath = await this.fetchLastStickerInSet(lastSticker);
 
         const message = await this.fetchTextMessage(lastStickerPath);
+        winston.info('message is: '+message);
         if (message == null)
             return false;
         if (message == process.env.VERIFYTEXT)

@@ -1,5 +1,4 @@
 const express = require('express');
-const winston = require('winston');
 const listRouter = express.Router();
 const TelegramBot = require('node-telegram-bot-api');
 const TelegramService = require('../services/TelegramService');
@@ -8,14 +7,11 @@ const telegramService = new TelegramService(new TelegramBot(token));
 const StickerSetValidationService = require('../services/StickerSetValidationService');
 const fs = require('fs');
 const path = require('path');
-const steggy = require('steggy-noencrypt');
 const FileService = require('../services/FileService');
 const { Owner } = require('../models/owner');
 const { StickerSet } = require('../models/stickerSet');
 const verificationImage = 'verificationimage.png';
-const encodedImage = 'baseimage-encoded';
 const dirName = 'resources/';
-const tempDirName = 'resources/temp/';
 
 
 const checkStickerSetName = async (stickerSetName) => {
@@ -24,17 +20,6 @@ const checkStickerSetName = async (stickerSetName) => {
         return true;
     else
         return false;
-};
-
-const hideMessageInsideImage = (stickerSetName, wallet) => {
-    const verificationImagePath = path.join(dirName, 'images', verificationImage);
-    const encodedImagePath = path.join(tempDirName, 'images/', `${stickerSetName}-${encodedImage}.png`);
-    const originalImage = fs.readFileSync(baseImagePath);
-    const concealed = steggy.conceal(originalImage, stickerSetName + wallet);
-    fs.writeFileSync(encodedImagePath, concealed)
-    const imageBase64 = Buffer.from(concealed).toString('base64');
-
-    return imageBase64;
 };
 
 const fetchVerificationImage = () => {

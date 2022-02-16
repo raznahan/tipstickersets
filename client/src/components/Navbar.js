@@ -17,7 +17,7 @@ class Navbar extends Component {
                 </div>
                 <div className="navbar-brand col-sm-3 col-md-2 mr-0">
                     <Link className="navbar-brand" to="/register">
-                        Add StickerSet
+                        Register New Sticker Set
                     </Link>
                 </div>
                 <ul className="navbar-nav px-3">
