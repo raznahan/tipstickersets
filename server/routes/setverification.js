@@ -9,10 +9,14 @@ const StickerSetValidationService = require('../services/StickerSetValidationSer
 const fs = require('fs');
 const path = require('path');
 const steggy = require('steggy-noencrypt');
-const baseImage = 'baseimage.png';
-const encodedImage = 'baseimage-encoded.png';
+const FileService = require('../services/FileService');
+const { Owner } = require('../models/owner');
+const { StickerSet } = require('../models/stickerSet');
+const verificationImage = 'verificationimage.png';
+const encodedImage = 'baseimage-encoded';
 const dirName = 'resources/';
 const tempDirName = 'resources/temp/';
+
 
 const checkStickerSetName = async (stickerSetName) => {
     const stickerSetValidationService = new StickerSetValidationService(telegramService);
@@ -20,6 +24,48 @@ const checkStickerSetName = async (stickerSetName) => {
         return true;
     else
         return false;
+};
+
+const hideMessageInsideImage = (stickerSetName, wallet) => {
+    const verificationImagePath = path.join(dirName, 'images', verificationImage);
+    const encodedImagePath = path.join(tempDirName, 'images/', `${stickerSetName}-${encodedImage}.png`);
+    const originalImage = fs.readFileSync(baseImagePath);
+    const concealed = steggy.conceal(originalImage, stickerSetName + wallet);
+    fs.writeFileSync(encodedImagePath, concealed)
+    const imageBase64 = Buffer.from(concealed).toString('base64');
+
+    return imageBase64;
+};
+
+const fetchVerificationImage = () => {
+    const verificationImagePath = path.join(dirName, 'images', verificationImage);
+    const verificationImageBuffer = fs.readFileSync(verificationImagePath);
+    const verificationImageBase64 = Buffer.from(verificationImageBuffer).toString('base64');
+
+    return verificationImageBase64;
+};
+
+const checkStickSetOwnership = async (stickerSetName) => {
+    const fileService = new FileService();
+    const stickerSetValidationService = new StickerSetValidationService(telegramService, fileService);
+    const isVerified = await stickerSetValidationService.verifyStickerSetOwnerShip(stickerSetName);
+
+    return isVerified;
+
+};
+
+const updateOwnerVerified = async (stickerSetName, wallet) => {
+    const owner = await Owner.findOne({ wallet: wallet });
+    if (owner) {
+        const stickerSet = await StickerSet.findOne({ name: stickerSetName, owner: owner._id }, null, { sort: { created: -1 } });
+        stickerSet.isActive = true;
+        stickerSet.ownerVerified = true;
+        stickerSet.ownerVerifiedDate = Date.now();
+        stickerSet.lastEdited = Date.now();
+        await stickerSet.save();
+        return true;
+    }
+    else return false;
 };
 
 listRouter.post('/validatesetname', async (req, res) => {
@@ -31,23 +77,33 @@ listRouter.post('/validatesetname', async (req, res) => {
 
 });
 
-listRouter.post('/createverificationimage', async (req, res) => {
+listRouter.post('/showverificationimage', async (req, res) => {
     if (!req.body.stickerSetName || !req.body.wallet)
-        return res.status(400).send('input text or wallet address is empty');
+        return res.status(400).send('sticker set or wallet address is empty');
 
     if (await checkStickerSetName(req.body.stickerSetName)) {
-        const baseImagePath = path.join(dirName, 'images', baseImage);
-        const encodedImagePath = path.join(tempDirName, 'images', encodedImage);
-        const originalImage = fs.readFileSync(baseImagePath);
-        const concealed = steggy.conceal(originalImage, req.body.stickerSetName + req.body.wallet);
-        fs.writeFileSync(encodedImagePath, concealed)
-        const imageBase64 = Buffer.from(concealed).toString('base64');
+        const imageBase64 = fetchVerificationImage();
         return res.send(imageBase64);
     }
     else
-        return res.status(400).send('invalid stickerset link');
+        return res.status(400).send('invalid sticker set name');
 
 });
+
+listRouter.post('/verifyownership', async (req, res) => {
+    if (!req.body.stickerSetName || !req.body.wallet)
+        return res.status(400).send('sticker set or wallet address is empty');
+
+    if (await checkStickSetOwnership(req.body.stickerSetName)) {
+        const result = await updateOwnerVerified(req.body.stickerSetName, req.body.wallet);
+        if (result)
+            return res.sendStatus(200);
+
+    }
+
+    return res.sendStatus(400);
+
+})
 
 module.exports = listRouter;
 

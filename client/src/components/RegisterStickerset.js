@@ -8,17 +8,19 @@ export default class AddStickerSet extends Component {
     this.state = {
       stickerSetName: "",
       submitbtnIsDisabaled: true,
-      verifybtnIsDisabled: true
+      verifybtnIsDisabled: true,
+      resultMessage: "",
+      verificationImage: "",
+      verificationImageText:""
     };
   }
-  insertHttpsIfNeeded = (link) => {
-    return !link.startsWith('http') ?
-      [link.slice(0, 0), 'https://', link.slice(0)].join('') : link;
+  resetToDefault = () => {
+    this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "",verificationImageText:"" });
   };
-
   onChangestickerSetName = async (e) => {
+
     if (this.stickerSetName.value.length < 3) {
-      this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true });
+      this.resetToDefault();
       return false;
     }
 
@@ -30,49 +32,56 @@ export default class AddStickerSet extends Component {
     if (stickerSetNameIsValid) {
       this.setState({
         stickerSetName: this.stickerSetName.value,
-        submitbtnIsDisabaled: false
+        submitbtnIsDisabaled: false,
+        verifybtnIsDisabled: true,
+        verificationImage: "",
+        verificationImageText:""
       });
-      //await showVerificationImage();
     }
     else {
-      this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true });
+      this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "",verificationImageText:""});
       return false;
     }
 
   };
 
-  onSubmit = async (e) => {
+  verifyOwnership = async (e) => {
     e.preventDefault();
 
-    // When post request is sent to the create url, axios will add a new record(newperson) to the database.
-    const newperson = {
-      person_name: this.state.person_name,
-      person_position: this.state.person_position,
-      person_level: this.state.person_level,
-    };
+    try {
+      const ownershipResult = await axios.post("http://localhost:3000/api/setverification/verifyownership",
+        { stickerSetName: this.stickerSetName.value, wallet: this.props.wallet });
 
-    axios
-      .post("http://localhost:5000/record/add", newperson)
-      .then((res) => console.log(res.data));
+      if (ownershipResult) {
+        this.setState({
+          submitbtnIsDisabaled: true,
+          verifybtnIsDisabled: true,
+          resultMessage: "Sticker set is successfully registered. You can try registering another sticker set.",
+          verificationImage:"",
+          verificationImageText:""
+        });
+        this.stickerSetName.value = '';
+      }
+    }
+    catch (err) {
+      this.setState({
+        submitbtnIsDisabaled: true,
+        verifybtnIsDisabled: false,
+        resultMessage: "Ownership verification failed. Try again."
+      });
+    }
 
-    // We will empty the state after posting the data to the database
-    this.setState({
-      person_name: "",
-      person_position: "",
-      person_level: "",
-    });
   }
-
   submitStickerSet = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/api/stickersets/register',
         { stickerSetName: this.stickerSetName.value, ownerWalletAddress: this.props.wallet });
-      console.log('response status:' + response.status + '\nresponse message:' + response.data);
       if (response.status == 200) {
         this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: false });
         const verificationImageCreated = await this.showVerificationImage(this.stickerSetName.value);
         if (verificationImageCreated) {
+          this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: false });
           console.log('image created');
           return true;
         }
@@ -85,7 +94,6 @@ export default class AddStickerSet extends Component {
         console.log('Already exists');
       }
       else {
-        console.log('response not 200: ' + response.status + "\ndata:" + response.data);
         this.setState({ submitbtnIsDisabaled: false, verifybtnIsDisabled: true });
         return false;
       }
@@ -112,30 +120,30 @@ export default class AddStickerSet extends Component {
       else return false;
     }
     catch (error) {
-      //console.log("error-" + error);
       return false;
     }
   };
 
   showVerificationImage = async (name) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/setverification/createverificationimage',
+      const response = await axios.post('http://localhost:3000/api/setverification/showverificationimage',
         { stickerSetName: name, wallet: this.props.wallet });
-      document.getElementById("verifimage").setAttribute(
-        'src', 'data:image/png;base64,' + response.data);
+      this.setState({ verificationImage: 'data:image/png;base64,' + response.data,
+      verificationImageText:"Right-click and save as to download the image." });
+
+      return true;
     }
     catch (error) {
       console.log("error in showVerificationImage:" + error);
       return false;
     }
-
   };
 
   render() {
     return (
       <div style={{ marginTop: 20 }}>
         <h3>Register your sticker set</h3>
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={this.verifyOwnership}>
           <div className="form-group">
             <label>StickerSet Name: </label>
             <input
@@ -148,8 +156,8 @@ export default class AddStickerSet extends Component {
           </div>
           <div id="stego" className="half">
             <h2>Verification Image:</h2>
-            <img id="verifimage" src="" />
-            <div className="note">Right-click and save as to download the image.</div>
+            <img id="verifimage" src={this.state.verificationImage} />
+            <div className="note">{this.state.verificationImageText}</div>
           </div>
           <div className="form-group">
             <input
@@ -171,6 +179,7 @@ export default class AddStickerSet extends Component {
             />
           </div>
         </form>
+        <p id="messageBox" className="note">{this.state.resultMessage}</p>
       </div>
     );
   }

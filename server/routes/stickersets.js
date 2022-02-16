@@ -70,7 +70,7 @@ listRouter.post('/register', async (req, res) => {
         return res.status(400).send('stickerset already exists');
 
     let owner;
-    owner = await Owner.findOne({ ownerWalletAddress: req.body.ownerWalletAddress });
+    owner = await Owner.findOne({ wallet: req.body.ownerWalletAddress });
     if (!owner) {
         owner = new Owner({
             wallet: req.body.ownerWalletAddress

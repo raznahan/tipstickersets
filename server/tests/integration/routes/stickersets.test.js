@@ -180,7 +180,6 @@ describe('/api/stickersets', () => {
                 ownerWalletAddress = owner.wallet;
                 postData = { stickerSetName, ownerWalletAddress };
                 const result = await sendPOSTRequest(postData);
-                console.log('status:'+result.status+'-data:'+result.body);
                 expect(result.status).toBe(400);
     
             });
