@@ -27,7 +27,6 @@
     "mongoose": "^6.1.2",
     "node-telegram-bot-api": "^0.56.0",
     "request": "^2.88.2",
-    "steggy-noencrypt": "^2.0.3",
     "text-from-image": "^1.1.1",
     "wallet-address-validator": "^0.2.4",
     "webp-converter": "^2.3.3",

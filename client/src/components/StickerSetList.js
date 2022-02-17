@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-import axios from 'axios';
-import { Link } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import StickerSet from '../components/StickerSet';
-const tipAmount = '0.1';
 
 export default class StickerSetList extends Component {
     constructor(props) {
@@ -19,9 +16,9 @@ export default class StickerSetList extends Component {
                 <div className="hero-body">
                     <div className="container">
                         <div className="header content">
-                            <h2 className="subtitle is-6">Code Challenge #16</h2>
+                            <h2 className="subtitle is-6">List of availabe sticker sets</h2>
                             <h1 className="title is-1">
-                                Infinite Scroll Unsplash Code Challenge
+                                Tip whichever you want!
                             </h1>
                         </div>
                         <InfiniteScroll

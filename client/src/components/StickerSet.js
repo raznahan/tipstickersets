@@ -5,15 +5,9 @@ const imgUrl = 'http://localhost:3000';
 export default class StickerSet extends Component {
     constructor(props) {
         super(props);
-        //console.info('StickerSet-Constructor');
     }
 
     render() {
-        // console.info('StickerSet-Render-props:');
-        // for (const [key, value] of Object.entries(this.props)) {
-        //     if (key != 'fetchStickerSetList' && key != 'tip')
-        //         console.log(`${key}: ${value}`)
-        // }
         return (
             this.props.stickerset != null ?
                 <div className="image-item stickeritem"  >

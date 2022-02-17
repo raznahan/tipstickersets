@@ -11,21 +11,36 @@ export default class AddStickerSet extends Component {
       verifybtnIsDisabled: true,
       resultMessage: "",
       verificationImage: "",
-      verificationImageText: ""
+      verificationImageText: "",
+      loadingGifInput: "",
+      loadingGifVerify: ""
     };
   }
   resetToDefault = () => {
     this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "", verificationImageText: "" });
   };
+  applyLoaderInput = () => {
+    this.setState({ loadingGifInput: "loading" });
+  }
+  removeLoaderInput = () => {
+    this.setState({ loadingGifInput: "" });
+  }
+  applyLoaderVerify = () => {
+    this.setState({ loadingGifVerify: "loading" });
+  }
+  removeLoaderVerify = () => {
+    this.setState({ loadingGifVerify: "" });
+  }
   onChangestickerSetName = async (e) => {
-
     if (this.stickerSetName.value.length < 3) {
       this.resetToDefault();
       return false;
     }
+    this.applyLoaderInput();
 
     if (!this.props.wallet) {
       this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true });
+      this.removeLoaderInput();
       return false// wallet not connected;
     }
     const stickerSetNameIsValid = await this.validateStickerSetName(this.stickerSetName.value);
@@ -38,8 +53,10 @@ export default class AddStickerSet extends Component {
         verificationImageText: "",
         resultMessage: ""
       });
+      this.removeLoaderInput();
     }
     else {
+      this.removeLoaderInput();
       this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: true, verificationImage: "", verificationImageText: "" });
       return false;
     }
@@ -49,6 +66,8 @@ export default class AddStickerSet extends Component {
   verifyOwnership = async (e) => {
     e.preventDefault();
 
+    this.applyLoaderVerify();
+
     try {
       const ownershipResult = await axios.post("http://localhost:3000/api/setverification/verifyownership",
         { stickerSetName: this.stickerSetName.value, wallet: this.props.wallet });
@@ -57,11 +76,12 @@ export default class AddStickerSet extends Component {
         this.setState({
           submitbtnIsDisabaled: true,
           verifybtnIsDisabled: true,
-          resultMessage: "Sticker set is successfully registered. You can try registering another sticker set.",
+          resultMessage: "Sticker set is successfully registered. Now people can find and tip your sticker set! You can try registering another sticker set.",
           verificationImage: "",
           verificationImageText: ""
         });
         this.stickerSetName.value = '';
+        this.removeLoaderVerify();
       }
     }
     catch (err) {
@@ -70,6 +90,7 @@ export default class AddStickerSet extends Component {
         verifybtnIsDisabled: false,
         resultMessage: "Ownership verification failed. Try again."
       });
+      this.removeLoaderVerify();
     }
 
   }
@@ -132,8 +153,9 @@ export default class AddStickerSet extends Component {
       this.setState({
         verificationImage: 'data:image/png;base64,' + response.data,
         verificationImageText: "Now, in order to verify your ownership over this sticker set," +
-          "you need to add the image above to you sticker set.\nThis should be the last sticker showing in the set." +
-          " Also, the image dimension is 512x300 which is a valid image dimension for Telegram stickers."
+          "you need to add the image above to your sticker set.\nThis should be the last sticker showing up in the set." +
+          " Also, the image dimension is 512x300, which is a valid dimension for Telegram stickers.\nAfter you're done " +
+          "with adding the image above as a sticker, click 'Verify Ownership' button."
       });
 
       return true;
@@ -154,7 +176,8 @@ export default class AddStickerSet extends Component {
             <input
               id="stickerSetName"
               type="text"
-              className="form-control"
+              placeholder="Enter sticker set name"
+              className={"form-control " + this.state.loadingGifInput}
               ref={(input) => { this.stickerSetName = input }}
               onChange={this.onChangestickerSetName}
             />
@@ -180,7 +203,7 @@ export default class AddStickerSet extends Component {
                 disabled={this.state.verifybtnIsDisabled}
                 type="submit"
                 value="Verify Ownership"
-                className="btn btn-primary"
+                className={"btn btn-primary " + this.state.loadingGifVerify}
               />
             </div>
           </div>

@@ -1,0 +1,15 @@
+* [33mf0bc9dd[m[33m ([m[1;36mHEAD -> [m[1;32mRegisterStickerSet[m[33m)[m Fix some css style in RegisterStickerset.js
+* [33m9d3f198[m Add updateOwnerVerified
+* [33m5be38b6[m Add showVerificationImage
+* [33m003ddd5[m Modified some test structures
+* [33me32f0ca[m Add RegisterStickerSet component
+*   [33m5f1046e[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Bug fix
+[32m|[m[33m\[m  
+[32m|[m * [33mdab807a[m Fix the bug that causeed a null-referencing to state.tipstickersets.methods
+* [33m|[m [33m1c72613[m Minor Bug fix
+* [33m|[m [33mad5242d[m Missing staging files
+* [33m|[m [33m76f0776[m Fix the bug that caused a null-referencing to state.tipstickersets.methods
+[33m|[m[33m/[m  
+* [33m01c8efb[m Add StickerSetList module
+* [33m7963d03[m Load stickersets thumbnail
+* [33mb522b03[m Initial commit
