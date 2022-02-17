@@ -3,6 +3,10 @@
 # dependencies
 **/server/node_modules
 **/client/node_modules
+**/server/media
+osd.traineddata
+eng.traineddata
+
 /.pnp
 .pnp.js
 
