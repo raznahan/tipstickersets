@@ -8,11 +8,6 @@ export default class StickerSet extends Component {
     }
 
     render() {
-        // console.info('StickerSet-Render-props:');
-        // for (const [key, value] of Object.entries(this.props)) {
-        //     if (key != 'fetchStickerSetList' && key != 'tip')
-        //         console.log(`${key}: ${value}`)
-        // }
         return (
             this.props.stickerset != null ?
                 <div className="image-item stickeritem"  >

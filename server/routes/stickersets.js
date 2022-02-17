@@ -11,10 +11,11 @@ const { Owner } = require('../models/owner');
 const { json } = require('express');
 const token = process.env.TELEGRAM_TOKEN;
 const telegramService = new TelegramService(new TelegramBot(token));
+const StickerSetValidationService = require('../services/StickerSetValidationService');
 const StickerService = require('../services/StickerService');
 const FileService = require('../services/FileService');
 const fileService = new FileService();
-const stickerService = new StickerService(telegramService, fileService, StickerSet);
+
 
 listRouter.get('/', async (req, res) => {
 
@@ -32,7 +33,7 @@ listRouter.get('/', async (req, res) => {
         .populate('owner', 'wallet -_id');
 
     const itemsCount = await StickerSet.count({ isActive: true, ownerVerified: true });
-
+    const stickerService = new StickerService(telegramService, fileService, StickerSet);
     stickerset = await stickerService.downloadAndSaveStickerSetThumbnail(stickersetList);
 
     const result = { stickersetList: stickersetList, itemsCount: itemsCount };
@@ -59,26 +60,39 @@ listRouter.post('/register', async (req, res) => {
         return res.status(400).send('invalid wallet address.');
 
     let stickerSet;
-    try {
-        stickerSet = await telegramService.getStickerSet(req.body.stickerSetLink);
-    }
-    catch (err) {
-        return res.status(400).send('invalid stickerset name.');
-    }
+    const stickerValidationService = new StickerSetValidationService(telegramService);
+    stickerSet = await stickerValidationService.validateAndFetchStickerSet(req.body.stickerSetName);
+    if (!stickerSet)
+        return res.status(400).send('invalid stickerset name');
 
-    const owner = await Owner.findOne({ ownerWalletAddress: req.body.ownerWalletAddress });
-    if (!owner)
-        return res.status(400).send('wallet address not found.');
+    const stickerResult = await StickerSet.findOne({name:req.body.stickerSetName,ownerVerified:true});
+    if(stickerResult)
+        return res.status(400).send('stickerset already exists');
+
+    let owner;
+    owner = await Owner.findOne({ wallet: req.body.ownerWalletAddress });
+    if (!owner) {
+        owner = new Owner({
+            wallet: req.body.ownerWalletAddress
+        });
+        await owner.save();
+    }
 
     const newStickerSet = new StickerSet({
         title: stickerSet.title,
-        name: req.body.stickerSetLink,
+        name: stickerSet.name,
         owner: owner._id
     });
-    await newStickerSet.save();
+
+    try {
+        await newStickerSet.save();
+    }
+    catch (err) {
+        winston.error('error in saving stickerset:'+err);
+        return res.status(500).send('something went wrong');
+    }
 
     res.sendStatus(200);
-    //const result = await bot.sendMessage(29384830, 'sdfsdf');
 
 });
 
@@ -97,18 +111,6 @@ listRouter.post('/updatetip', async (req, res) => {
 
 });
 
-listRouter.post('/validatesetname', async (req, res) => {
-    try {
-        const url = new URL(req.body.stickerSetLink);
-        console.log('url: '+url);
-        const stickerSetName = url.toString().split("/").pop();
-        const result = await telegramService.getStickerSet(stickerSetName);
-    }
-    catch (e) {
-        return res.status(400).send('invalid stickerset link');
 
-    }
-    res.send(200);
-});
 
 module.exports = listRouter;

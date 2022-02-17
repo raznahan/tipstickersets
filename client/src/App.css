@@ -5,7 +5,18 @@
     margin-top: 50px;
     text-align: center;
   }
-  
+  .verification-image {
+    margin-top:20px;
+    margin-left:45px;
+  }
+  .verification-buttons{
+    margin-top:20px;
+    margin-left:45px;
+  }
+  .RegisterSticker-Header{
+    margin:50px auto 0;
+    width:600px;
+  }
   .image-grid {
     /* display: grid;
     grid-gap: 40px;
@@ -27,4 +38,12 @@
       height: 100%;
       object-fit: cover;
     }
+
+    .loading {    
+      background-color: #ffffff;
+      background-image: url("./media/spinner.gif");
+      background-size: 25px 25px;
+      background-position:right center;
+      background-repeat: no-repeat;
+  }
   

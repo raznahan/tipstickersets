@@ -1,5 +1,5 @@
 const winston = require('winston');
-//const { StickerSet } = require('../models/stickerSet');
+const StringService = require('../services/StringService');
 
 class StickerService {
     constructor(telegramService, fileService, stickerset) {
@@ -16,7 +16,7 @@ class StickerService {
                 const fileId = stickerset.stickers[0].thumb.file_id;
                 const file = await this.telegramService.getFile(fileId);
                 const thumbnailDownloadLink = process.env.TELEGRAM_DOWNLOAD_PATH + file.file_path;
-                const savingPath = this.thumbnailDownloadPath +item.name+'/'+ file.file_path;
+                const savingPath = this.thumbnailDownloadPath + item.name + '/' + file.file_path;
                 await this.fileService.downloadImage(thumbnailDownloadLink, savingPath);
                 item.thumbnail = savingPath.substring(1);
                 item.lastEdited = Date.now();
@@ -26,6 +26,7 @@ class StickerService {
         return stickersets;
     };
 
+   
 }
 
 module.exports = StickerService;

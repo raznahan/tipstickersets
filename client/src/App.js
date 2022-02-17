@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import { Route, Routes } from "react-router-dom";
-import Identicon from 'identicon.js';
 import './App.css';
 import TipStickerSets from './build/TipStickerSets.json';
 import Navbar from './components/Navbar';
 import RegisterStickerSet from './components/RegisterStickerset';
-//import { stickerSetSchema } from '../../server/models/stickerSet';
 import axios from 'axios';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import StickerSetList from './components/StickerSetList';
 const apiPath = 'http://localhost:3000/api';
 
@@ -26,7 +23,6 @@ const updateStickerSetTip = (name, tipAmount) => {
 
 class App extends Component {
     constructor(props) {
-        console.log('App-Constructor');
         super(props);
         this.state = {
             account: '',
@@ -38,7 +34,6 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        console.log('App-ComponentDidMount');
         await this.loadWeb3();
         await this.loadBlockchianData();
         await this.fetchStickerSetList();
@@ -47,7 +42,7 @@ class App extends Component {
     async loadWeb3() {
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
-            await window.ethereum.enable()
+            await window.ethereum.enable();
         }
         else if (window.web3) {
             window.web3 = new Web3(window.web3.currentProvider)
@@ -56,9 +51,7 @@ class App extends Component {
             window.alert('Non-Ethereum browser detected. You should consider trying metamask!')
         }
     }
-
     loadBlockchianData = async () => {
-        console.log('App-loadBlockchianData');
         const web3 = window.web3;
         var accounts = await web3.eth.getAccounts()
         this.setState({ account: accounts[0] })
@@ -107,7 +100,6 @@ class App extends Component {
     };
 
     getStickerSetTip = async (name) => {
-        console.log('name: ' + name);
         const stickerSet = await this.state.tipstickersets.methods.stickerSets(name).call();
         if (stickerSet)
             return web3.utils.fromWei(stickerSet.tips, 'Ether');
@@ -121,9 +113,7 @@ class App extends Component {
                 this.setState({ loading: false });
             })
     }
-
     render() {
-        console.log('App-render called');
         return (
             <div>
                 <Navbar account={this.state.account} />
@@ -137,10 +127,9 @@ class App extends Component {
                     />
                     }>
                     </Route>
-                    <Route path='/register' element={<RegisterStickerSet />}>
+                    <Route path='/register' element={<RegisterStickerSet wallet={this.state.account}/>}>
                     </Route>
                 </Routes>
-
             </div>
         );
     }
