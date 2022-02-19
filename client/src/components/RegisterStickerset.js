@@ -104,7 +104,6 @@ export default class AddStickerSet extends Component {
         const verificationImageCreated = await this.showVerificationImage(this.stickerSetName.value);
         if (verificationImageCreated) {
           this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: false });
-          console.log('image created');
           return true;
         }
         else {

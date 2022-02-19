@@ -65,10 +65,10 @@ listRouter.post('/register', async (req, res) => {
     if (!stickerSet)
         return res.status(400).send('invalid stickerset name');
 
-    const stickerResult = await StickerSet.findOne({name:req.body.stickerSetName,ownerVerified:true});
+    const stickerResult = await StickerSet.findOne({name:req.body.stickerSetName.toLowerCase(),ownerVerified:true});
     if(stickerResult)
         return res.status(400).send('stickerset already exists');
-
+        
     let owner;
     owner = await Owner.findOne({ wallet: req.body.ownerWalletAddress });
     if (!owner) {
@@ -80,7 +80,7 @@ listRouter.post('/register', async (req, res) => {
 
     const newStickerSet = new StickerSet({
         title: stickerSet.title,
-        name: stickerSet.name,
+        name: stickerSet.name.toLowerCase(),
         owner: owner._id
     });
 
