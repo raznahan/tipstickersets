@@ -4,6 +4,7 @@
 **/server/node_modules
 **/client/node_modules
 **/server/media
+**/server/resources/temp
 osd.traineddata
 eng.traineddata
 

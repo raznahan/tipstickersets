@@ -7,19 +7,10 @@ require('./startup/logging')();
 const express = require('express');
 const config = require('config');
 const app = express();
+require("./startup/db")();
 require('./startup/cors')(app);
 require('./startup/routes.js')(app);
-require("./startup/db")();
 require('config');
-
-const fillDummyData = false;
-
-const insertDummyData = async () => {
-    await require('./startup/dummydbdata')();
-}
-
-if (fillDummyData)
-    insertDummyData();
 
 
 const listeningPort = config.get("port") || 8080;

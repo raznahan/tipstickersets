@@ -132,7 +132,6 @@ describe('/api/setverification ', () => {
 
             expect(result.status).toBe(400);
         });
-
         it('should return 200 if valid stickerset name and wallet address are provided', async () => {
             stickerSetName = 'ghalbtest34_by_demybot';
             const owner = await createOwner('0x36141f8675BA2976a96509885dE13B3dFAE6Df7D');

@@ -12,6 +12,7 @@ const { Owner } = require('../models/owner');
 const { StickerSet } = require('../models/stickerSet');
 const verificationImage = 'verificationimage.png';
 const dirName = 'resources/';
+const winston = require('winston');
 
 
 const checkStickerSetName = async (stickerSetName) => {

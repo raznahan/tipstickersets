@@ -101,8 +101,6 @@ class App extends Component {
         this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
     };
 
-    sortStickerSets = (stickersets) => {
-    }
     getStickerSetTip = async (name) => {
         const stickerSet = await this.state.tipstickersets.methods.stickerSets(name).call();
         if (stickerSet)

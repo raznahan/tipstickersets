@@ -35,7 +35,6 @@ contract TipStickerSets {
         } else {
             _stickerSet = StickerSet(0, _owner, true);
         }
-
         _owner.transfer(msg.value);
         _stickerSet.tips = _stickerSet.tips + msg.value;
         stickerSets[_name] = _stickerSet;

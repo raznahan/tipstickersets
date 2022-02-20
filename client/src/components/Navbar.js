@@ -3,7 +3,6 @@ import Identicon from 'identicon.js';
 import photo from '../photo.png';
 import { Link } from 'react-router-dom';
 
-
 class Navbar extends Component {
 
     render() {

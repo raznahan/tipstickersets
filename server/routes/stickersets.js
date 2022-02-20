@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const winston = require('winston');
 const validateObjectId = require('../middleware/validateObjectId');
 const listRouter = express.Router();
@@ -15,7 +14,6 @@ const StickerSetValidationService = require('../services/StickerSetValidationSer
 const StickerService = require('../services/StickerService');
 const FileService = require('../services/FileService');
 const fileService = new FileService();
-
 
 listRouter.get('/', async (req, res) => {
 
