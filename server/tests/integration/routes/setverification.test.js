@@ -1,5 +1,4 @@
 const request = require('supertest');
-const StickerSetValidationService = require('../../../services/StickerSetValidationService');
 const {Owner} = require('../../../models/owner');
 const {StickerSet} = require('../../../models/stickerSet');
 
@@ -15,6 +14,8 @@ describe('/api/setverification ', () => {
     });
     afterEach(async () => {
         await server.close();
+        await StickerSet.deleteMany({});
+        await Owner.deleteMany({});
     });
     const createOwner = async (walletAddress) => {
         let owner = new Owner({
@@ -132,7 +133,6 @@ describe('/api/setverification ', () => {
 
             expect(result.status).toBe(400);
         });
-
         it('should return 200 if valid stickerset name and wallet address are provided', async () => {
             stickerSetName = 'ghalbtest34_by_demybot';
             const owner = await createOwner('0x36141f8675BA2976a96509885dE13B3dFAE6Df7D');

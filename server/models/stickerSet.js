@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+const winston = require('winston');
 
 var stickerSetSchema = mongoose.Schema({
     title: {
@@ -48,7 +49,6 @@ var stickerSetSchema = mongoose.Schema({
 })
 
 const StickerSet = mongoose.model('StickerSet', stickerSetSchema);
-
 
 module.exports.stickerSetSchema = stickerSetSchema;
 module.exports.StickerSet = StickerSet;

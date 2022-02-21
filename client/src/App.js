@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import RegisterStickerSet from './components/RegisterStickerset';
 import axios from 'axios';
 import StickerSetList from './components/StickerSetList';
+import { parse } from 'ipaddr.js';
 const apiPath = 'http://localhost:3000/api';
 
 
@@ -89,6 +90,7 @@ class App extends Component {
             const item = stickersets[i];
             if (item.isTipped) {
                 const tips = await this.getStickerSetTip(item.name);
+                console.log('name:' + item.name + "\ntips:" + tips);
                 if (tips) {
                     item.tips = tips;
                     stickersets[i] = item;
@@ -96,7 +98,7 @@ class App extends Component {
             }
 
         }
-        this.setState({ stickersets });
+        this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
     };
 
     getStickerSetTip = async (name) => {
@@ -127,7 +129,7 @@ class App extends Component {
                     />
                     }>
                     </Route>
-                    <Route path='/register' element={<RegisterStickerSet wallet={this.state.account}/>}>
+                    <Route path='/register' element={<RegisterStickerSet wallet={this.state.account} />}>
                     </Route>
                 </Routes>
             </div>

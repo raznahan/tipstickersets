@@ -30,7 +30,6 @@ class StickerSetValidationService {
         const lastStickerPath = await this.fetchLastStickerInSet(lastSticker);
 
         const message = await this.fetchTextMessage(lastStickerPath);
-        winston.info('message is: '+message);
         if (message == null)
             return false;
         if (message == process.env.VERIFYTEXT)
@@ -50,8 +49,6 @@ class StickerSetValidationService {
     };
 
     async fetchTextMessage(imagePath) {
-        winston.info('fetchTextMessage imagePath: ' + imagePath);
-
         try {
             const textInImage = await ReadText(imagePath);
             return textInImage;

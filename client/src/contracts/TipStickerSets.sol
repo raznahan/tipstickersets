@@ -25,17 +25,16 @@ contract TipStickerSets {
         payable
         hasMinimumTip
     {
-        
         require(bytes(_name).length != 0);
         require(msg.sender.balance >= 0.01 ether);
+        require(msg.sender != _owner); // owners are not allowed to tip themselves.
 
         StickerSet memory _stickerSet = stickerSets[_name];
         if (_stickerSet.isValue) {
             _stickerSet = stickerSets[_name];
         } else {
-            _stickerSet = StickerSet(msg.value, _owner, true);
+            _stickerSet = StickerSet(0, _owner, true);
         }
-
         _owner.transfer(msg.value);
         _stickerSet.tips = _stickerSet.tips + msg.value;
         stickerSets[_name] = _stickerSet;
