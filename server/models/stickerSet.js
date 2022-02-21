@@ -49,7 +49,6 @@ var stickerSetSchema = mongoose.Schema({
 })
 
 const StickerSet = mongoose.model('StickerSet', stickerSetSchema);
-winston.info('stickerset was modeled');
 
 module.exports.stickerSetSchema = stickerSetSchema;
 module.exports.StickerSet = StickerSet;

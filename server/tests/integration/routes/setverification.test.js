@@ -1,5 +1,4 @@
 const request = require('supertest');
-const StickerSetValidationService = require('../../../services/StickerSetValidationService');
 const {Owner} = require('../../../models/owner');
 const {StickerSet} = require('../../../models/stickerSet');
 
@@ -15,6 +14,8 @@ describe('/api/setverification ', () => {
     });
     afterEach(async () => {
         await server.close();
+        await StickerSet.deleteMany({});
+        await Owner.deleteMany({});
     });
     const createOwner = async (walletAddress) => {
         let owner = new Owner({
