@@ -1,7 +1,7 @@
 {
   "name": "tipstickers",
   "version": "1.0.0",
-  "description": "Tip Telegram sticker sets",
+  "description": "Tip Telegram sticker sets on blockchain",
   "main": "",
   "scripts": {
     "start": "npm start --prefix server",
