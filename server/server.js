@@ -11,6 +11,7 @@ require("./startup/db")();
 require('./startup/cors')(app);
 require('./startup/routes.js')(app);
 require('config');
+require('./startup/prod')(app);
 
 
 const listeningPort = config.get("port") || 8080;
