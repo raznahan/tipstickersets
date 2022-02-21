@@ -1,4 +1,4 @@
 {
-    "connectionString": "mongodb+srv://emrzed:G2VW@74a2@kejhZ@cluster0.5fxpc.mongodb.net/tipstickers?retryWrites=true&w=majority",
+    "connectionString": "mongodb+srv://emrzed:G2VW%4074a2%40kejhZ@cluster0.5fxpc.mongodb.net/tipstickers?retryWrites=true&w=majority",
     "port": "3000"
 }

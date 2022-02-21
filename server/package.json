@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "jest --watchAll --verbose --detectOpenHandles --maxWorkers=1"
   },
   "keywords": [],

@@ -14,7 +14,7 @@ require('config');
 require('./startup/prod')(app);
 
 
-const listeningPort = config.get("port") || 8080;
+const listeningPort =  process.env.PORT || config.get("port");
 const server = app.listen(listeningPort, () => {
     winston.info(`listening on port ${listeningPort}`);
 });
