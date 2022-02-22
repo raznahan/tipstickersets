@@ -25,7 +25,7 @@ listRouter.get('/', async (req, res) => {
         count = Number(req.query.count);
         skip = count * (Number(req.query.page) - 1);
     }
-
+    skip = skip <= 0 ? 1 : skip;
     const stickersetList = await StickerSet.find({ isActive: true, ownerVerified: true }, null,
         { skip: skip, limit: count, sort: { tips: -1, created: 1 } })
         .populate('owner', 'wallet -_id');
@@ -63,10 +63,10 @@ listRouter.post('/register', async (req, res) => {
     if (!stickerSet)
         return res.status(400).send('invalid stickerset name');
 
-    const stickerResult = await StickerSet.findOne({name:req.body.stickerSetName.toLowerCase(),ownerVerified:true});
-    if(stickerResult)
+    const stickerResult = await StickerSet.findOne({ name: req.body.stickerSetName.toLowerCase(), ownerVerified: true });
+    if (stickerResult)
         return res.status(400).send('stickerset already exists');
-        
+
     let owner;
     owner = await Owner.findOne({ wallet: req.body.ownerWalletAddress });
     if (!owner) {
@@ -86,7 +86,7 @@ listRouter.post('/register', async (req, res) => {
         await newStickerSet.save();
     }
     catch (err) {
-        winston.error('error in saving stickerset:'+err);
+        winston.error('error in saving stickerset:' + err);
         return res.status(500).send('something went wrong');
     }
 
