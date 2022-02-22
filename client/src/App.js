@@ -5,16 +5,14 @@ import './App.css';
 import TipStickerSets from './build/TipStickerSets.json';
 import Navbar from './components/Navbar';
 import RegisterStickerSet from './components/RegisterStickerset';
-import axios from 'axios';
+import MyClientApi from './utility/myapiclient.js';
 import StickerSetList from './components/StickerSetList';
-import { parse } from 'ipaddr.js';
-const apiPath = 'http://localhost:3000/api';
 
 
 const updateStickerSetTip = (name, tipAmount) => {
     var data = { name: name, tips: tipAmount }
-    axios
-        .post(apiPath + '/stickersets/updateTip', data)
+    MyClientApi.axiosClient
+        .post(apiPath + '/api/stickersets/updateTip', data)
         .then((response) => {
         })
         .catch(function (error) {
@@ -70,8 +68,8 @@ class App extends Component {
     }
 
     fetchStickerSetList = async (count = 10, page = 1) => {
-        axios
-            .get(`http://localhost:3000/api/stickersets?count=${count}&page=${page}`)
+        MyClientApi.axiosClient
+            .get(`/api/stickersets?count=${count}&page=${page}`)
             .then((response) => {
                 this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
                 Number(this.state.stickersets.length) < Number(response.data.itemsCount)

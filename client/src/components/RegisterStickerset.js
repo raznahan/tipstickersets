@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import axios from 'axios';
-
+import MyApiClientApi from '../utility/myapiclient.js';
 
 export default class AddStickerSet extends Component {
   constructor(props) {
@@ -69,7 +68,7 @@ export default class AddStickerSet extends Component {
     this.applyLoaderVerify();
 
     try {
-      const ownershipResult = await axios.post("http://localhost:3000/api/setverification/verifyownership",
+      const ownershipResult = await MyClientApi.axiosClient.post("/api/setverification/verifyownership",
         { stickerSetName: this.stickerSetName.value, wallet: this.props.wallet });
 
       if (ownershipResult) {
@@ -97,7 +96,7 @@ export default class AddStickerSet extends Component {
   submitStickerSet = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/stickersets/register',
+      const response = await MyClientApi.axiosClient.post('/api/stickersets/register',
         { stickerSetName: this.stickerSetName.value, ownerWalletAddress: this.props.wallet });
       if (response.status == 200) {
         this.setState({ submitbtnIsDisabaled: true, verifybtnIsDisabled: false });
@@ -134,7 +133,7 @@ export default class AddStickerSet extends Component {
   }
   validateStickerSetName = async (name) => {
     try {
-      const response = await axios.post('http://localhost/api/setverification/validatesetname', { stickerSetName: name });
+      const response = await MyClientApi.axiosClient.post('/api/setverification/validatesetname', { stickerSetName: name });
       if (response.status == 200) {
         return "true";
       }
@@ -147,7 +146,7 @@ export default class AddStickerSet extends Component {
 
   showVerificationImage = async (name) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/setverification/showverificationimage',
+      const response = await MyClientApi.axiosClient.post('/api/setverification/showverificationimage',
         { stickerSetName: name, wallet: this.props.wallet });
       this.setState({
         verificationImage: 'data:image/png;base64,' + response.data,
