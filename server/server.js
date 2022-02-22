@@ -1,6 +1,7 @@
 var dotenv = require('dotenv');
 var dotenvExpand = require('dotenv-expand');
 var myEnv = dotenv.config({ path: './config.env' });
+
 dotenvExpand.expand(myEnv);
 const winston = require('winston');
 require('./startup/logging')();

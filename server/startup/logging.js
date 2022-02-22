@@ -6,12 +6,12 @@ module.exports = function () {
     //winston.add(new winston.transport.Console({colorize:true,prettyPrint:true,level:'error'}));
 
 
-    if (process.env.NODE_ENV !== 'production') {
+    //if (process.env.NODE_ENV !== 'production') {
         winston.add(new winston.transports.Console({
             format: winston.format.colorize(),
             prettyPrint: true
         }));
-    }
+    //}
 
     // const logger = winston.createLogger({
     //     transports: [

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 const tipAmount = '0.1';
-const imgUrl = 'http://localhost:3000';
+const imgUrl  = "http://localhost:3000"
 
 export default class StickerSet extends Component {
     constructor(props) {
