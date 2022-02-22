@@ -134,7 +134,7 @@ export default class AddStickerSet extends Component {
   }
   validateStickerSetName = async (name) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/setverification/validatesetname', { stickerSetName: name });
+      const response = await axios.post('http://localhost/api/setverification/validatesetname', { stickerSetName: name });
       if (response.status == 200) {
         return "true";
       }
