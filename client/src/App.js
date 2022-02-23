@@ -57,6 +57,7 @@ class App extends Component {
         const networkId = await web3.eth.net.getId()
         console.log('TipStickerSets:'+Object.keys(TipStickerSets));
         console.log('networkId:'+networkId);
+        console.log('TipStickerSets.networks: '+TipStickerSets.networks);
         const networkData = TipStickerSets.networks[networkId];
         console.log('networkData:'+networkData);
 
