@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
-import TipStickerSets from './build/TipStickerSets.json';
+import TipStickerSets from './contracts-build/TipStickerSets.json';
 import Navbar from './components/Navbar';
 import RegisterStickerSet from './components/RegisterStickerset';
 import MyClientApi from './utility/myapiclient.js';
