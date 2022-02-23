@@ -55,7 +55,9 @@ class App extends Component {
         var accounts = await web3.eth.getAccounts()
         this.setState({ account: accounts[0] })
         const networkId = await web3.eth.net.getId()
+        console.log('TipStickerSets:'+TipStickerSets);
         const networkData = TipStickerSets.networks[networkId]
+        console.log('networkData:'+Object.keys(networkData));
 
         if (networkData) {
             const tipstickersets = new web3.eth.Contract(TipStickerSets.abi, networkData.address)
