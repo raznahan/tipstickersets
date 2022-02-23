@@ -57,8 +57,8 @@ class App extends Component {
         const networkId = await web3.eth.net.getId()
         console.log('TipStickerSets:'+Object.keys(TipStickerSets));
         console.log('networkId:'+networkId);
-        const networkData = TipStickerSets.networks[networkId]
-        console.log('networkData:'+Object.keys(networkData));
+        const networkData = TipStickerSets.networks[networkId];
+        console.log('networkData:'+networkData);
 
         if (networkData) {
             const tipstickersets = new web3.eth.Contract(TipStickerSets.abi, networkData.address)
@@ -109,6 +109,7 @@ class App extends Component {
     }
 
     tip = async (name, owner, tipAmount) => {
+        console.log('this.state.tipstickersets:'+Object.keys(this.state.tipstickersets));
         let tipAmountWei = window.web3.utils.toWei(tipAmount, 'Ether');
         this.state.tipstickersets.methods.TipStickerSetOwner(name, owner).send({ from: this.state.account, value: tipAmountWei })
             .on('transactionHash', (hash) => {
