@@ -1,5 +1,6 @@
 const winston = require('winston');
-const StringService = require('../services/StringService');
+const {create,urlSource} = require('ipfs-http-client');
+const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
 class StickerService {
     constructor(telegramService, fileService, stickerset) {
@@ -17,8 +18,12 @@ class StickerService {
                 const file = await this.telegramService.getFile(fileId);
                 const thumbnailDownloadLink = process.env.TELEGRAM_DOWNLOAD_PATH + file.file_path;
                 const savingPath = this.thumbnailDownloadPath + item.name + '/' + file.file_path;
-                await this.fileService.downloadImage(thumbnailDownloadLink, savingPath);
-                item.thumbnail = savingPath.substring(1);
+                //await this.fileService.downloadImage(thumbnailDownloadLink, savingPath);
+                winston.info('download url:'+thumbnailDownloadLink);
+                const ipfsResult = await ipfs.add(urlSource(thumbnailDownloadLink));
+                winston.info('result:'+ipfsResult.cid);
+                item.thumbnail = ipfsResult.cid;
+                //item.thumbnail = savingPath.substring(1);
                 item.lastEdited = Date.now();
                 await this.StickerSet.updateOne({ _id: item._id }, { $set: { thumbnail: item.thumbnail, lastEdited: item.lastEdited } });
             }

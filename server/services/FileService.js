@@ -22,6 +22,9 @@ class FileService {
         });
     };
 
+    async uploadToIPFS(filePath){
+
+    };
 };
 
 module.exports = FileService;

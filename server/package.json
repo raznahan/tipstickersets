@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest --watchAll --verbose --detectOpenHandles --maxWorkers=1",
-    "local":"cd .. && cd client && npm run build && nodemon server.js"
+    "local": "cd .. && cd client && npm run build && nodemon server.js"
   },
   "keywords": [],
   "author": "Moji <mojtaba.raznahan@gmail.com>",
@@ -28,6 +28,7 @@
     "express": "^4.17.2",
     "express-async-errors": "^3.1.1",
     "helmet": "^5.0.2",
+    "ipfs-http-client": "^56.0.1",
     "mongoose": "^6.1.2",
     "node-telegram-bot-api": "^0.56.0",
     "request": "^2.88.2",

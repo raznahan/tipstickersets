@@ -13,7 +13,6 @@ module.exports = function (app) {
     app.use('/media', express.static('media'));
     app.use('/resources',express.static('resources'));
     app.use(express.static(path.join(__dirname, "../..", "client", "build")));
-    console.log(__dirname);
     app.get('*', function (req, res) {
         res.sendFile(path.join(__dirname,'../..', 'client','build', 'index.html'));
       });

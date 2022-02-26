@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
-import TipStickerSets from './build/TipStickerSets.json';
+import TipStickerSets from './contracts-build/TipStickerSets.json';
 import Navbar from './components/Navbar';
 import RegisterStickerSet from './components/RegisterStickerset';
 import MyClientApi from './utility/myapiclient.js';
@@ -55,7 +55,14 @@ class App extends Component {
         var accounts = await web3.eth.getAccounts()
         this.setState({ account: accounts[0] })
         const networkId = await web3.eth.net.getId()
-        const networkData = TipStickerSets.networks[networkId]
+        console.log('TipStickerSets:'+Object.keys(TipStickerSets));
+        console.log('networkId:'+networkId);
+        console.log('TipStickerSets.networks: '+JSON.stringify(TipStickerSets.networks));
+        console.log('TipStickerSets.networkType: '+JSON.stringify(TipStickerSets.networkType));
+        console.log('TipStickerSets.abi: '+JSON.stringify(TipStickerSets.abi));
+        
+        const networkData = TipStickerSets.networks[networkId];
+        console.log('networkData:'+networkData);
 
         if (networkData) {
             const tipstickersets = new web3.eth.Contract(TipStickerSets.abi, networkData.address)
@@ -106,6 +113,7 @@ class App extends Component {
     }
 
     tip = async (name, owner, tipAmount) => {
+        console.log('this.state.tipstickersets:'+Object.keys(this.state.tipstickersets));
         let tipAmountWei = window.web3.utils.toWei(tipAmount, 'Ether');
         this.state.tipstickersets.methods.TipStickerSetOwner(name, owner).send({ from: this.state.account, value: tipAmountWei })
             .on('transactionHash', (hash) => {

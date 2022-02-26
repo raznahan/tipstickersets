@@ -10,7 +10,7 @@
     "heroku-postbuild": "npm run install-client && npm run install-server"
   },
   "engines": {
-    "node": "14.18.1"
+    "node": "16.14.0"
   },
   "author": "Moji <mojtaba.raznahan@gmail.com>",
   "license": "MIT",

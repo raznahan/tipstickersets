@@ -2,6 +2,7 @@ const config = require('config');
 const mongoose = require('mongoose');
 const winston = require('winston');;
 const importData = require('../startup/dummydbdata');
+const {StickerSet} = require('../models/stickerSet');
 
 module.exports = function () {
   const connectionString = config.get('connectionString');

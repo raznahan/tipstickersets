@@ -15,6 +15,7 @@ eng.traineddata
 /coverage
 
 # production
+**/contracts-build
 **/build
 
 # misc
