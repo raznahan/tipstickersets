@@ -58,6 +58,9 @@ class App extends Component {
         console.log('TipStickerSets:'+Object.keys(TipStickerSets));
         console.log('networkId:'+networkId);
         console.log('TipStickerSets.networks: '+JSON.stringify(TipStickerSets.networks));
+        console.log('TipStickerSets.networkType: '+JSON.stringify(TipStickerSets.networkType));
+        console.log('TipStickerSets.abi: '+JSON.stringify(TipStickerSets.abi));
+        
         const networkData = TipStickerSets.networks[networkId];
         console.log('networkData:'+networkData);
 
