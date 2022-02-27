@@ -55,14 +55,14 @@ class App extends Component {
         var accounts = await web3.eth.getAccounts()
         this.setState({ account: accounts[0] })
         const networkId = await web3.eth.net.getId()
-        console.log('TipStickerSets:'+Object.keys(TipStickerSets));
-        console.log('networkId:'+networkId);
-        console.log('TipStickerSets.networks: '+JSON.stringify(TipStickerSets.networks));
-        console.log('TipStickerSets.networkType: '+JSON.stringify(TipStickerSets.networkType));
-        console.log('TipStickerSets.abi: '+JSON.stringify(TipStickerSets.abi));
-        
+        console.log('TipStickerSets:' + Object.keys(TipStickerSets));
+        console.log('networkId:' + networkId);
+        console.log('TipStickerSets.networks: ' + JSON.stringify(TipStickerSets.networks));
+        console.log('TipStickerSets.networkType: ' + JSON.stringify(TipStickerSets.networkType));
+        console.log('TipStickerSets.abi: ' + JSON.stringify(TipStickerSets.abi));
+
         const networkData = TipStickerSets.networks[networkId];
-        console.log('networkData:'+networkData);
+        console.log('networkData:' + networkData);
 
         if (networkData) {
             const tipstickersets = new web3.eth.Contract(TipStickerSets.abi, networkData.address)
@@ -96,7 +96,7 @@ class App extends Component {
             if (item.isTipped) {
                 const tips = await this.getStickerSetTip(item.name);
                 console.log('name:' + item.name + "\ntips:" + tips);
-                if (tips) {
+                if (tips > -1) {
                     item.tips = tips;
                     stickersets[i] = item;
                 }
@@ -110,10 +110,12 @@ class App extends Component {
         const stickerSet = await this.state.tipstickersets.methods.stickerSets(name).call();
         if (stickerSet)
             return web3.utils.fromWei(stickerSet.tips, 'Ether');
+        else
+            return -1;
     }
 
     tip = async (name, owner, tipAmount) => {
-        console.log('this.state.tipstickersets:'+Object.keys(this.state.tipstickersets));
+        console.log('this.state.tipstickersets:' + Object.keys(this.state.tipstickersets));
         let tipAmountWei = window.web3.utils.toWei(tipAmount, 'Ether');
         this.state.tipstickersets.methods.TipStickerSetOwner(name, owner).send({ from: this.state.account, value: tipAmountWei })
             .on('transactionHash', (hash) => {
