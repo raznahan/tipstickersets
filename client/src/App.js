@@ -93,14 +93,14 @@ class App extends Component {
     fetchTipAmounts = async (stickersets) => {
         for (let i = 0; i < stickersets.length; i++) {
             const item = stickersets[i];
-            if (item.isTipped) {
-                const tips = await this.getStickerSetTip(item.name);
-                console.log('name:' + item.name + "\ntips:" + tips);
-                if (tips > -1) {
-                    item.tips = tips;
-                    stickersets[i] = item;
-                }
+            // if (item.isTipped) {
+            const tips = await this.getStickerSetTip(item.name);
+            console.log('name:' + item.name + "\ntips:" + tips);
+            if (tips > -1) {
+                item.tips = tips;
+                stickersets[i] = item;
             }
+            //}
 
         }
         this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
