@@ -33,7 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && cp -r src/contracts-build build",
-    "truffle": "truffle compile && truffle migrate --network ropsten"
+    "truffle": "truffle compile && truffle migrate --reset"
   },
   "browserslist": {
     "production": [
