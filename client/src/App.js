@@ -12,7 +12,7 @@ import StickerSetList from './components/StickerSetList';
 const updateStickerSetTip = (name, tipAmount) => {
     var data = { name: name, tips: tipAmount }
     MyClientApi.axiosClient
-        .post(apiPath + '/api/stickersets/updateTip', data)
+        .post('/api/stickersets/updateTip', data)
         .then((response) => {
         })
         .catch(function (error) {
@@ -55,14 +55,14 @@ class App extends Component {
         var accounts = await web3.eth.getAccounts()
         this.setState({ account: accounts[0] })
         const networkId = await web3.eth.net.getId()
-        console.log('TipStickerSets:'+Object.keys(TipStickerSets));
-        console.log('networkId:'+networkId);
-        console.log('TipStickerSets.networks: '+JSON.stringify(TipStickerSets.networks));
-        console.log('TipStickerSets.networkType: '+JSON.stringify(TipStickerSets.networkType));
-        console.log('TipStickerSets.abi: '+JSON.stringify(TipStickerSets.abi));
-        
+        console.log('TipStickerSets:' + Object.keys(TipStickerSets));
+        console.log('networkId:' + networkId);
+        console.log('TipStickerSets.networks: ' + JSON.stringify(TipStickerSets.networks));
+        console.log('TipStickerSets.networkType: ' + JSON.stringify(TipStickerSets.networkType));
+        console.log('TipStickerSets.abi: ' + JSON.stringify(TipStickerSets.abi));
+
         const networkData = TipStickerSets.networks[networkId];
-        console.log('networkData:'+networkData);
+        console.log('networkData:' + networkData);
 
         if (networkData) {
             const tipstickersets = new web3.eth.Contract(TipStickerSets.abi, networkData.address)
@@ -70,50 +70,49 @@ class App extends Component {
             this.setState({ loading: false })
         }
         else {
-            window.alert('TipStickerSets network not deployed to detected network.')
+            window.alert('TipStickerSets contract not deployed to detected network.')
         }
     }
 
     fetchStickerSetList = async (count = 10, page = 1) => {
-        MyClientApi.axiosClient
-            .get(`/api/stickersets?count=${count}&page=${page}`)
-            .then((response) => {
-                this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
-                Number(this.state.stickersets.length) < Number(response.data.itemsCount)
-                    ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
-                this.setState({ page: Number(this.state.page) + 1 })
-                this.fetchTipAmounts(this.state.stickersets);
-            })
-            .catch(function (error) {
-                console.log("error-" + error);
-            });
-
+        try {
+            const response = await MyClientApi.axiosClient.get(`/api/stickersets?count=${count}&page=${page}`);
+            Number(this.state.stickersets.length) < Number(response.data.itemsCount)
+                ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
+            const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
+            let stickerSetsConcatinated = this.state.stickersets.concat(stickersetsWithTips);
+            this.setState({ stickersets: stickerSetsConcatinated.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
+            this.setState({ page: Number(this.state.page) + 1 })
+        } catch (error) {
+            console.log("error in fetching stickersets" + error);
+        }
     }
 
     fetchTipAmounts = async (stickersets) => {
         for (let i = 0; i < stickersets.length; i++) {
             const item = stickersets[i];
-            if (item.isTipped) {
-                const tips = await this.getStickerSetTip(item.name);
-                console.log('name:' + item.name + "\ntips:" + tips);
-                if (tips) {
-                    item.tips = tips;
-                    stickersets[i] = item;
-                }
+            const tips = await this.getStickerSetTip(item.name);
+            console.log('name:' + item.name + "\ntips:" + tips);
+            if (tips > -1) {
+                item.tips = tips;
+                stickersets[i] = item;
             }
-
         }
-        this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
+
+        return stickersets;
+
     };
 
     getStickerSetTip = async (name) => {
         const stickerSet = await this.state.tipstickersets.methods.stickerSets(name).call();
         if (stickerSet)
             return web3.utils.fromWei(stickerSet.tips, 'Ether');
+        else
+            return -1;
     }
 
     tip = async (name, owner, tipAmount) => {
-        console.log('this.state.tipstickersets:'+Object.keys(this.state.tipstickersets));
+        console.log('this.state.tipstickersets:' + Object.keys(this.state.tipstickersets));
         let tipAmountWei = window.web3.utils.toWei(tipAmount, 'Ether');
         this.state.tipstickersets.methods.TipStickerSetOwner(name, owner).send({ from: this.state.account, value: tipAmountWei })
             .on('transactionHash', (hash) => {

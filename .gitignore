@@ -15,12 +15,13 @@ eng.traineddata
 /coverage
 
 # production
-**/contracts-build
+#**/contracts-build
 **/build
 
 # misc
 .DS_Store
 server/config.env
+client/config.env
 .env.local
 .env.development.local
 .env.test.local
