@@ -75,37 +75,32 @@ class App extends Component {
     }
 
     fetchStickerSetList = async (count = 10, page = 1) => {
-        MyClientApi.axiosClient
-            .get(`/api/stickersets?count=${count}&page=${page}`)
-            .then((response) => {
-                Number(this.state.stickersets.length) < Number(response.data.itemsCount)
-                    ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
-                const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
-                this.setState({ stickersets: this.state.stickersets.concat(stickersetsWithTips)});
-                this.setState({ page: Number(this.state.page) + 1 })
-
-            })
-            .catch(function (error) {
-                console.log("error-" + error);
-            });
-
+        try {
+            const response = await MyClientApi.axiosClient.get(`/api/stickersets?count=${count}&page=${page}`);
+            Number(this.state.stickersets.length) < Number(response.data.itemsCount)
+                ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
+            const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
+            let stickerSetsConcatinated = this.state.stickersets.concat(stickersetsWithTips);
+            this.setState({ stickersets: stickerSetsConcatinated.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
+            this.setState({ page: Number(this.state.page) + 1 })
+        } catch (error) {
+            console.log("error in fetching stickersets" + error);
+        }
     }
 
     fetchTipAmounts = async (stickersets) => {
         for (let i = 0; i < stickersets.length; i++) {
             const item = stickersets[i];
-            // if (item.isTipped) {
             const tips = await this.getStickerSetTip(item.name);
             console.log('name:' + item.name + "\ntips:" + tips);
             if (tips > -1) {
                 item.tips = tips;
                 stickersets[i] = item;
             }
-            //}
-
         }
+
         return stickersets;
-        this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
+
     };
 
     getStickerSetTip = async (name) => {
