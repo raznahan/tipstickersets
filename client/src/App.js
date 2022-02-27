@@ -78,11 +78,12 @@ class App extends Component {
         MyClientApi.axiosClient
             .get(`/api/stickersets?count=${count}&page=${page}`)
             .then((response) => {
-                this.setState({ stickersets: this.state.stickersets.concat(response.data.stickersetList) });
                 Number(this.state.stickersets.length) < Number(response.data.itemsCount)
                     ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
+                const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
+                this.setState({ stickersets: this.state.stickersets.concat(stickersetsWithTips)});
                 this.setState({ page: Number(this.state.page) + 1 })
-                this.fetchTipAmounts(this.state.stickersets);
+
             })
             .catch(function (error) {
                 console.log("error-" + error);
@@ -103,6 +104,7 @@ class App extends Component {
             //}
 
         }
+        return stickersets;
         this.setState({ stickersets: stickersets.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
     };
 
