@@ -12,7 +12,7 @@ import StickerSetList from './components/StickerSetList';
 const updateStickerSetTip = (name, tipAmount) => {
     var data = { name: name, tips: tipAmount }
     MyClientApi.axiosClient
-        .post(apiPath + '/api/stickersets/updateTip', data)
+        .post('/api/stickersets/updateTip', data)
         .then((response) => {
         })
         .catch(function (error) {
@@ -70,7 +70,7 @@ class App extends Component {
             this.setState({ loading: false })
         }
         else {
-            window.alert('TipStickerSets network not deployed to detected network.')
+            window.alert('TipStickerSets contract not deployed to detected network.')
         }
     }
 
