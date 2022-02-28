@@ -17,7 +17,7 @@ export default class StickerSetList extends Component {
                     <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-1 justify-content-center">
                         <InfiniteScroll
                             dataLength={this.props.stickersets.length}
-                            next={() => { this.props.fetchStickerSetList(5, this.props.page) }}
+                            next={() => { this.props.fetchStickerSetList(10, this.props.page) }}
                             hasMore={this.props.hasMore}
                             className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
                             loader={
