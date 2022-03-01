@@ -24,6 +24,7 @@ export default class StickerSetList extends Component {
                                 <img
                                     src="https://res.cloudinary.com/chuloo/image/upload/v1550093026/scotch-logo-gif_jq4tgr.gif"
                                     alt="loading"
+                                    height="110"
                                 />}>
                             {/* <div className="image-grid" style={{ marginTop: "30px" }}> */}
                             {

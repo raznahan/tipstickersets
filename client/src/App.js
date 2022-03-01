@@ -77,8 +77,8 @@ class App extends Component {
     fetchStickerSetList = async (count = 10, page = 1) => {
         try {
             const response = await MyClientApi.axiosClient.get(`/api/stickersets?count=${count}&page=${page}`);
-            console.log('current length: ' + this.state.stickersets.length + "\nresponseCount:" + response.data.stickersetList.length +
-                "\ntotalCount: " + response.data.itemsCount);
+            // console.log('current length: ' + this.state.stickersets.length + "\nresponseCount:" + response.data.stickersetList.length +
+            //     "\ntotalCount: " + response.data.itemsCount);
             //console.log('current list: ' + JSON.stringify(response.data.stickersetList));
             const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
             let stickerSetsConcatinated = this.state.stickersets.concat(stickersetsWithTips);
