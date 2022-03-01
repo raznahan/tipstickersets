@@ -18,11 +18,9 @@ class StickerService {
                 const file = await this.telegramService.getFile(fileId);
                 const thumbnailDownloadLink = process.env.TELEGRAM_DOWNLOAD_PATH + file.file_path;
                 const savingPath = this.thumbnailDownloadPath + item.name + '/' + file.file_path;
-                //await this.fileService.downloadImage(thumbnailDownloadLink, savingPath);
                 const ipfsResult = await ipfs.add(urlSource(thumbnailDownloadLink));
                 winston.info('result:'+ipfsResult.cid);
                 item.thumbnail = ipfsResult.cid;
-                //item.thumbnail = savingPath.substring(1);
                 item.lastEdited = Date.now();
                 await this.StickerSet.updateOne({ _id: item._id }, { $set: { thumbnail: item.thumbnail, lastEdited: item.lastEdited } });
             }

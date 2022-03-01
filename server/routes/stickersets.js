@@ -26,11 +26,9 @@ listRouter.get('/', async (req, res) => {
         skip = count * (Number(req.query.page) - 1);
     }
     skip = skip < 0 ? 1 : skip;
-    winston.info('finalCount:'+count+" skip:"+skip +" incomingCount:"+req.query.count+" page:"+req.query.page);
     const stickersetList = await StickerSet.find({ isActive: true, ownerVerified: true }, null,
         { skip: skip, limit: count, sort: { tips: -1, created: 1 } })
         .populate('owner', 'wallet -_id');
-    stickersetList.forEach(m=> winston.info(m.name));
     const itemsCount = await StickerSet.count({ isActive: true, ownerVerified: true });
     const stickerService = new StickerService(telegramService, fileService, StickerSet);
     stickerset = await stickerService.downloadAndSaveStickerSetThumbnail(stickersetList);
