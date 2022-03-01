@@ -77,11 +77,14 @@ class App extends Component {
     fetchStickerSetList = async (count = 10, page = 1) => {
         try {
             const response = await MyClientApi.axiosClient.get(`/api/stickersets?count=${count}&page=${page}`);
-            Number(this.state.stickersets.length) < Number(response.data.itemsCount)
-                ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
+            // console.log('current length: ' + this.state.stickersets.length + "\nresponseCount:" + response.data.stickersetList.length +
+            //     "\ntotalCount: " + response.data.itemsCount);
+            //console.log('current list: ' + JSON.stringify(response.data.stickersetList));
             const stickersetsWithTips = await this.fetchTipAmounts(response.data.stickersetList);
             let stickerSetsConcatinated = this.state.stickersets.concat(stickersetsWithTips);
             this.setState({ stickersets: stickerSetsConcatinated.sort((a, b) => parseFloat(b.tips) - parseFloat(a.tips)) });
+            Number(this.state.stickersets.length) < Number(response.data.itemsCount)
+                ? this.setState({ hasMore: true }) : this.setState({ hasMore: false });
             this.setState({ page: Number(this.state.page) + 1 })
         } catch (error) {
             console.log("error in fetching stickersets" + error);

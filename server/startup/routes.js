@@ -12,6 +12,7 @@ module.exports = function (app) {
     app.use('/api/setverification',setverification);
     app.use('/media', express.static('media'));
     app.use('/resources',express.static('resources'));
+    app.use(express.urlencoded({ extended: false }));
     app.use(express.static(path.join(__dirname, "../..", "client", "build")));
     app.get('*', function (req, res) {
         res.sendFile(path.join(__dirname,'../..', 'client','build', 'index.html'));

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MyApiClientApi from '../utility/myapiclient.js';
+import MyClientApi from '../utility/myapiclient.js';
 
 export default class AddStickerSet extends Component {
   constructor(props) {
@@ -20,16 +20,17 @@ export default class AddStickerSet extends Component {
   };
   applyLoaderInput = () => {
     this.setState({ loadingGifInput: "loading" });
-  }
+  };
   removeLoaderInput = () => {
     this.setState({ loadingGifInput: "" });
-  }
+  };
   applyLoaderVerify = () => {
     this.setState({ loadingGifVerify: "loading" });
-  }
+  };
   removeLoaderVerify = () => {
     this.setState({ loadingGifVerify: "" });
-  }
+  };
+
   onChangestickerSetName = async (e) => {
     if (this.stickerSetName.value.length < 3) {
       this.resetToDefault();
@@ -92,7 +93,8 @@ export default class AddStickerSet extends Component {
       this.removeLoaderVerify();
     }
 
-  }
+  };
+
   submitStickerSet = async (e) => {
     e.preventDefault();
     try {
@@ -130,7 +132,7 @@ export default class AddStickerSet extends Component {
       return false;
     }
 
-  }
+  };
   validateStickerSetName = async (name) => {
     try {
       const response = await MyClientApi.axiosClient.post('/api/setverification/validatesetname', { stickerSetName: name });

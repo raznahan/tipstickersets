@@ -12,7 +12,34 @@ export default class StickerSetList extends Component {
 
     render() {
         return (
-            <div className="hero is-fullheight is-bold is-info">
+            <section className="py-5">
+                <div className="container px-4 px-lg-5 mt-5">
+                    <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-1 justify-content-center">
+                        <InfiniteScroll
+                            dataLength={this.props.stickersets.length}
+                            next={() => { this.props.fetchStickerSetList(10, this.props.page) }}
+                            hasMore={this.props.hasMore}
+                            className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+                            loader={
+                                <img
+                                    src="https://res.cloudinary.com/chuloo/image/upload/v1550093026/scotch-logo-gif_jq4tgr.gif"
+                                    alt="loading"
+                                    height="110"
+                                />}>
+                            {/* <div className="image-grid" style={{ marginTop: "30px" }}> */}
+                            {
+                                this.props.stickersets.map((stickerset, index) => (
+                                    <StickerSet stickerset={stickerset} key={index} tip={this.props.tip} />
+                                ))
+                            }
+
+                            {/* </div> */}
+                        </InfiniteScroll>
+                    </div>
+                </div>
+            </section>
+
+            /* <div className="hero is-fullheight is-bold is-info">
                 <div className="hero-body">
                     <div className="container">
                         <div className="header content">
@@ -41,7 +68,8 @@ export default class StickerSetList extends Component {
                         </InfiniteScroll>
                     </div>
                 </div>
-            </div>
+            </div> */
+
         );
     }
 }

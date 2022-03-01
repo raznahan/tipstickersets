@@ -19,7 +19,6 @@ class StickerService {
                 const thumbnailDownloadLink = process.env.TELEGRAM_DOWNLOAD_PATH + file.file_path;
                 const savingPath = this.thumbnailDownloadPath + item.name + '/' + file.file_path;
                 //await this.fileService.downloadImage(thumbnailDownloadLink, savingPath);
-                winston.info('download url:'+thumbnailDownloadLink);
                 const ipfsResult = await ipfs.add(urlSource(thumbnailDownloadLink));
                 winston.info('result:'+ipfsResult.cid);
                 item.thumbnail = ipfsResult.cid;
