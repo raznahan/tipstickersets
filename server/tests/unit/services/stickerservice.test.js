@@ -38,7 +38,6 @@ describe('getStickerSetsThumbnail', () => {
         }
     };
 
-
     it('should download and save thumbnail if a thumbnail is null', async () => {
         stickerService = new StickerService(telegramService, fileService, StickerSet);
         const result = await stickerService.downloadAndSaveStickerSetThumbnail(stickersets);
