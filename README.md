@@ -20,7 +20,7 @@ There is no built-in mechanism in Telegram by which you could verify ownership o
 3. Owner should save the picture and add the picture as a sticker to the sticker set entered in the previous step. (this step is done within the Telegram app).
 4. After the owner is done with adding the new sticker to the set, they will click on "verify ownership" button.
 5. Application then automatically goes and fetches the last sticker in that sticker set and compares it with the original picture.
-6. If the text inside the sticker is equal to that of the picture(using OCR), ownership is prooved. Otherwise, ownership is rejected.
+6. If the text inside the sticker is equal to that of the picture(using OCR), ownership is proved. Otherwise, ownership is rejected.
 
 > \* In all these steps owner has their wallet connected to the application.
 
